@@ -1889,8 +1889,7 @@ async function startRec(){
   clearVoiceWarn();
   starting=true;
 
-  // На iOS AudioContext должен быть создан в контексте жеста — вызываем синхронно
-  await ensureAudioVisualization();
+  // testura
 
   rec=new SR();
   rec.lang="ru-RU";
