@@ -1881,7 +1881,24 @@ function scheduleRestart(){
     try{starting=true;rec.start();}catch(e){starting=false;}
   },280);
 }
-// testura
+
+async function ensureAudioVisualization(){
+  // AudioContext создаём только по пользовательскому жесту — иначе на iOS будет suspended
+  try{
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia) return;
+    mediaStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==="suspended"){try{await audioCtx.resume();}catch(e){}}
+    const src=audioCtx.createMediaStreamSource(mediaStream);
+    analyser=audioCtx.createAnalyser();analyser.fftSize=512;
+    src.connect(analyser);drawWave();
+  }catch(e){
+    // визуализация необязательна — не блокируем ввод
+    if(e&&(e.name==="NotAllowedError"||e.name==="SecurityError")){
+      showVoiceWarn("Доступ к микрофону запрещён. Открой настройки браузера → Разрешения → Микрофон → Разрешить и обнови страницу.");
+    }
+  }
+}
 
 async function startRec(){
   if(!SR)return;
@@ -1889,7 +1906,8 @@ async function startRec(){
   clearVoiceWarn();
   starting=true;
 
-  // testura
+  // На iOS AudioContext должен быть создан в контексте жеста — вызываем синхронно
+  // await ensureAudioVisualization();
 
   rec=new SR();
   rec.lang="ru-RU";
