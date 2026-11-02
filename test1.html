@@ -1,0 +1,2700 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=5">
+<title>Устно на 5+ — нейропроверка устных ответов</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Rubik:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4f46e5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Устно на 5+">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--ink:#22314f;--ink-soft:#5a6883;--paper:#fbfcf6;--card:#fffefa;--grid:rgba(84,128,205,.10);--margin:#e05a4e;--chalk:#1f4438;--chalk-2:#2b5a49;--chalk-ink:#f2f6ee;--red:#cf3527;--red-soft:#fdeae6;--green:#2c8a52;--green-soft:#e7f4ea;--hl:#ffe668;--blue:#3a67c9;--line:#e3e0d2;--purple:#8a5ad1;--shadow:0 2px 3px rgba(35,48,80,.07),0 14px 30px -18px rgba(35,48,80,.30);
+  --safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px);--safe-l:env(safe-area-inset-left,0px);--safe-r:env(safe-area-inset-right,0px);}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{font-family:Rubik,system-ui,sans-serif;color:var(--ink);background-color:var(--paper);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:26px 26px;min-height:100vh;min-height:100dvh;overscroll-behavior-y:none;touch-action:manipulation}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px;padding-left:max(20px,var(--safe-l));padding-right:max(20px,var(--safe-r))}
+::selection{background:var(--hl)}
+.doodles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.doodles span{position:absolute;font-family:Caveat;font-size:52px;opacity:.10;color:var(--blue);animation:floaty 16s ease-in-out infinite alternate}
+.doodles span:nth-child(2){color:var(--red)}.doodles span:nth-child(3){color:var(--chalk)}
+@keyframes floaty{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(-26px) rotate(5deg)}}
+.board{position:relative;background:radial-gradient(120% 160% at 20% -20%,#2c5c4c 0%,var(--chalk) 55%,#16352b 100%);color:var(--chalk-ink);overflow:hidden;padding-top:var(--safe-t)}
+.board::after{content:"";position:absolute;inset:0;background:radial-gradient(60% 40% at 70% 10%,rgba(255,255,255,.10),transparent 60%),radial-gradient(40% 30% at 20% 80%,rgba(255,255,255,.06),transparent 70%);mix-blend-mode:screen;pointer-events:none}
+.board-in{position:relative;z-index:2;padding:26px 0 22px;display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between}
+.logo{font-family:Caveat;font-weight:700;font-size:clamp(40px,5.2vw,62px);line-height:.9;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.logo .five{color:var(--hl)}
+.logo small{display:block;font-family:Rubik;font-weight:500;font-size:12px;letter-spacing:.22em;text-transform:uppercase;opacity:.75;margin-top:8px}
+.board-meta{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.chalk-chip{border:1.5px dashed rgba(242,246,238,.45);border-radius:999px;padding:5px 14px;font-size:13px;opacity:.9;min-height:32px;display:inline-flex;align-items:center;gap:6px}
+.chalk-note{width:100%;font-family:Caveat;font-size:clamp(20px,2.4vw,26px);color:#ffe9a8;transform:rotate(-.6deg);margin-top:4px}
+.squiggle{display:block;width:100%;height:14px}
+.steps{position:sticky;top:0;z-index:40;background:rgba(251,252,246,.94);border-bottom:1px solid var(--line);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.steps-in{display:flex;gap:4px;overflow-x:auto;padding:10px 20px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.steps-in::-webkit-scrollbar{display:none}
+.step{display:flex;align-items:center;gap:9px;padding:9px 14px;border-radius:999px;text-decoration:none;color:var(--ink-soft);font-size:14px;font-weight:500;white-space:nowrap;transition:.2s;min-height:44px;scroll-snap-align:start;flex:none}
+.step b{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#e8ebf4;color:var(--ink);font-size:13px;transition:.2s}
+.step:hover{background:#f0f2ea;color:var(--ink)}
+.step.done b{background:var(--green);color:#fff}
+.step.active{background:#fff;box-shadow:var(--shadow);color:var(--ink)}
+.step.active b{background:var(--red);color:#fff;animation:tickpulse 1.6s infinite}
+@keyframes tickpulse{0%,100%{box-shadow:0 0 0 0 rgba(207,53,39,.35)}50%{box-shadow:0 0 0 7px rgba(207,53,39,0)}}
+.gbanner{background:#fff8e2;border:1px solid #ecd9a0;color:#7a5a00;border-radius:10px;padding:10px 16px;font-size:14px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.grid{position:relative;z-index:1;display:grid;grid-template-columns:400px 1fr;gap:26px;padding-top:28px;padding-bottom:calc(70px + var(--safe-b));align-items:start}
+.col{display:flex;flex-direction:column;gap:26px;min-width:0}
+@media(max-width:960px){.grid{grid-template-columns:1fr;gap:20px;padding-top:16px}}
+.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:26px 26px 24px 58px;transform:rotate(-.3deg)}
+.col-right .card{transform:rotate(.25deg)}
+.card::before{content:"";position:absolute;top:0;bottom:0;left:40px;width:2px;background:rgba(224,90,78,.45)}
+.card h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card h2 .num{font-family:Caveat;font-size:30px;letter-spacing:0;text-transform:none;color:var(--ink)}
+.card .card-title{font-size:22px;font-weight:700;margin-bottom:14px}
+.card h3{font-size:16px;margin-bottom:12px}
+@media(max-width:960px){.card{padding:22px 18px 20px 44px;transform:none}.col-right .card{transform:none}.card::before{left:28px}}
+.js .reveal{opacity:0;transform:translateY(22px) rotate(-.3deg);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:translateY(0) rotate(-.3deg)}
+.col-right .reveal.in{transform:translateY(0) rotate(.25deg)}
+@media(max-width:960px){.js .reveal{transform:translateY(16px)}.reveal.in{transform:none}.col-right .reveal.in{transform:none}}
+.hint{font-size:13px;color:var(--ink-soft);line-height:1.5}
+.topic-btn{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;border:1px solid #ddd9ca;background:#fff;padding:12px 14px;border-radius:8px;font:inherit;font-size:15px;cursor:pointer;margin-bottom:8px;transition:.15s;min-height:44px}
+.topic-btn:hover{border-color:var(--blue);transform:translateX(3px)}
+.topic-btn.sel{border-color:var(--red);box-shadow:0 0 0 1.5px var(--red);background:var(--red-soft)}
+.topic-btn.sel::after{content:"✓";color:var(--red);font-weight:700}
+.topic-btn.flash{animation:flashOk 1.1s ease}
+@keyframes flashOk{0%{box-shadow:0 0 0 0 rgba(44,138,82,.55)}100%{box-shadow:0 0 0 16px rgba(44,138,82,0)}}
+.topic-btn small{color:var(--ink-soft)}
+.ok-line{font-family:Caveat;font-size:22px;color:var(--green);margin-top:10px;transform:rotate(-.6deg)}
+.ok-line em{font-family:Rubik;font-size:12px;color:var(--ink-soft);font-style:normal;margin-left:8px}
+.ok-line.pop{animation:pop .45s ease}
+.field{margin-top:10px}
+.field label{display:block;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:5px}
+input[type=text],input[type=password],textarea,select{width:100%;border:1.5px solid #d8d5c6;border-radius:8px;padding:12px 14px;font:inherit;font-size:16px;background:#fff;color:var(--ink);transition:.15s;min-height:44px;-webkit-appearance:none;appearance:none}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(58,103,201,.15)}
+textarea{resize:vertical;min-height:76px}
+.drop{display:flex;flex-direction:column;align-items:center;gap:6px;border:2px dashed #cfcab6;border-radius:10px;padding:20px 14px;text-align:center;cursor:pointer;transition:.2s;background:#fffdf6;min-height:120px;justify-content:center}
+.drop:hover,.drop.over{border-color:var(--blue);background:#f3f7ff;transform:scale(1.01)}
+.drop .big{font-size:30px}
+.src-row{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #e5e2d3;border-radius:8px;padding:8px 12px;margin-top:8px;animation:pop .3s ease}
+@keyframes pop{from{opacity:0;transform:scale(.96)}}
+.src-row .tag{font-size:16px;flex:none}
+.src-row .nm{font-size:13.5px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.src-row .wc{font-size:12px;color:var(--ink-soft);flex:none}
+.src-thumb{width:46px;height:46px;object-fit:cover;border-radius:6px;border:2px solid #d9e6da;cursor:pointer;flex:none;transition:.15s}
+.src-thumb:hover{transform:scale(1.12);border-color:var(--green)}
+.badge-ok{flex:none;font-size:11px;font-weight:700;color:var(--green);background:var(--green-soft);border:1px solid #cfe6d5;border-radius:6px;padding:2px 7px}
+.badge-ord{flex:none;font-size:11px;font-weight:700;color:#fff;background:var(--blue);border-radius:6px;padding:2px 7px}
+.badge-part{flex:none;font-size:11px;font-weight:700;color:#4a3b00;background:linear-gradient(180deg,#fdf6d8,#f9ecb4);border:1px solid #e6d793;border-radius:6px;padding:2px 7px}
+.spin{flex:none;width:16px;height:16px;border:2.5px solid #d7d4c4;border-top-color:var(--blue);border-radius:50%;animation:rot .8s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.res-thumbs{white-space:nowrap}
+.res-thumb{width:36px;height:36px;object-fit:cover;border-radius:6px;border:2px solid var(--green);vertical-align:middle;margin:2px 4px 0 0;cursor:pointer;transition:.15s}
+.res-thumb:hover{transform:scale(1.15)}
+.icon-btn{border:none;background:none;cursor:pointer;font-size:16px;color:var(--ink-soft);padding:6px;border-radius:8px;transition:.15s;flex:none;min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+.icon-btn:hover{color:var(--red);background:var(--red-soft)}
+.ocr-progress{margin-top:10px;display:none}
+.ocr-progress .bar{height:8px;border-radius:99px;background:#e9e6d8;overflow:hidden}
+.ocr-progress .bar i{display:block;height:100%;width:0;background:var(--blue);transition:width .25s}
+.ocr-progress p{font-size:12.5px;color:var(--ink-soft);margin-top:5px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:8px;padding:12px 18px;font:inherit;font-size:15px;font-weight:600;cursor:pointer;transition:.18s;min-height:44px}
+.btn.ghost{background:#fff;border:1.5px solid #d8d5c6;color:var(--ink)}
+.btn.ghost:hover{border-color:var(--ink);transform:translateY(-1px)}
+.btn.green{background:var(--chalk);color:#fff}
+.btn.green:hover{background:var(--chalk-2);transform:translateY(-1px);box-shadow:0 8px 18px -10px rgba(31,68,56,.6)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.rec-area{display:flex;flex-direction:column;align-items:center;gap:12px;padding:8px 0 4px}
+.mic{position:relative;width:104px;height:104px;border-radius:50%;border:none;cursor:pointer;background:var(--red);color:#fff;font-size:40px;display:grid;place-items:center;box-shadow:0 10px 24px -10px rgba(207,53,39,.7);transition:.2s;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.mic:hover{transform:scale(1.05)}
+.mic:active{transform:scale(.96)}
+.mic.rec{animation:micbreath 1.4s ease-in-out infinite}
+@keyframes micbreath{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.mic.rec::before,.mic.rec::after{content:"";position:absolute;inset:-10px;border-radius:50%;border:2px solid rgba(207,53,39,.5);animation:ring 1.8s linear infinite}
+.mic.rec::after{animation-delay:.9s}
+@keyframes ring{from{transform:scale(.85);opacity:1}to{transform:scale(1.5);opacity:0}}
+#wave{width:100%;max-width:420px;height:46px;display:block}
+#micStatus{font-size:14px;color:var(--ink-soft);text-align:center;padding:0 8px}
+#micStatus.live{color:var(--red);font-weight:600}
+#tx{min-height:180px;line-height:30px;background-image:repeating-linear-gradient(transparent 0 29px,#dfe6f2 29px 30px);background-attachment:local;border:1px solid #e2dfd0;border-radius:8px;padding:6px 14px;font-size:16px}
+.tx-meta{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:13px;color:var(--ink-soft)}
+.tx-meta b{color:var(--ink)}
+.rec-actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;justify-content:center;align-items:center}
+.voice-warn{display:none;margin-top:10px;background:#fff6e2;border:1px solid #ecd9a0;border-radius:8px;padding:10px 14px;font-size:13.5px}
+.checkbar{display:flex;flex-direction:column;align-items:center;gap:8px;padding:6px 0}
+#checkBtn{position:relative;background:var(--red);color:#fff;font-family:Caveat;font-size:30px;font-weight:700;border:none;border-radius:12px;padding:16px 44px;cursor:pointer;transform:rotate(-1.2deg);box-shadow:0 12px 26px -12px rgba(207,53,39,.75);transition:.18s;min-height:56px;width:100%;max-width:360px;touch-action:manipulation}
+#checkBtn:hover:not(:disabled){transform:rotate(-1.2deg) translateY(-3px) scale(1.03)}
+#checkBtn:disabled{opacity:.45;cursor:not-allowed}
+#checkHint{font-size:13.5px;color:var(--ink-soft);text-align:center}
+.result-head{display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;padding:30px 30px 26px 58px}
+@media(max-width:760px){.result-head{grid-template-columns:1fr;justify-items:center;text-align:center;padding:24px 18px 20px 44px;gap:16px}}
+.stamp{width:112px;height:112px;border:4px solid var(--red);border-radius:50%;display:grid;place-items:center;font-family:Caveat;font-weight:700;font-size:74px;color:var(--red);background:radial-gradient(circle at 30% 25%,rgba(207,53,39,.10),transparent 65%);position:relative}
+.stamp::after{content:"оценка";position:absolute;bottom:14px;font-family:Rubik;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(207,53,39,.7)}
+.stamp.in{animation:stampIn .55s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes stampIn{0%{transform:scale(2.6) rotate(-16deg);opacity:0}70%{transform:scale(.92) rotate(3deg);opacity:1}100%{transform:scale(1) rotate(-4deg)}}
+.verdict{font-family:Caveat;font-size:clamp(28px,3.4vw,40px);line-height:1.05;color:var(--ink)}
+.res-meta{font-size:13px;color:var(--ink-soft);margin-top:8px;line-height:1.6}
+.teacher-fix{margin-top:10px;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-soft);flex-wrap:wrap;justify-content:center}
+.tgrade{width:44px;height:44px;border-radius:50%;border:2px solid #d8d5c6;background:#fff;font:inherit;font-weight:700;cursor:pointer;transition:.15s;font-size:15px}
+.tgrade:hover{border-color:var(--red)}
+.tgrade.sel{border-color:var(--red);background:var(--red-soft);color:var(--red)}
+.nn-box{background:#f6f7f1;border:1px solid #e5e2d3;border-radius:10px;padding:12px 14px;min-width:0;width:100%;max-width:340px}
+.nn-title{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px}
+.net{width:100%;height:auto}
+.net line{stroke:#d6ddee;stroke-width:1}
+.net circle{fill:#b7c6e0}
+.net.thinking line{stroke-dasharray:5 7;animation:edgeFlow .9s linear infinite}
+.net.thinking circle{animation:nodePulse 1s ease-in-out infinite}
+@keyframes edgeFlow{to{stroke-dashoffset:-12}}
+@keyframes nodePulse{0%,100%{fill:#b7c6e0}50%{fill:var(--red)}}
+.nn-note{font-size:12px;color:var(--ink-soft);margin-top:6px}
+.bar-row{display:grid;grid-template-columns:180px 1fr 46px;gap:12px;align-items:center;padding:7px 0;border-bottom:1px dashed #eceadf}
+.bar-row:last-child{border:none}
+.bar-row .lbl{font-size:14px}
+.track{height:12px;border-radius:99px;background:#edeadd;overflow:hidden}
+.track i{display:block;height:100%;width:0;border-radius:99px;background:var(--chalk);transition:width 1s cubic-bezier(.3,1,.4,1)}
+.track i.warn{background:#d99a2b}.track i.bad{background:var(--red)}
+.bar-row .val{font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+@media(max-width:560px){.bar-row{grid-template-columns:112px 1fr 42px;gap:8px}.bar-row .lbl{font-size:13px}}
+.summ{font-size:15px;line-height:1.75}
+.summ p{margin-bottom:8px}
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;font-size:12.5px;color:var(--ink-soft)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:12px;height:12px;border-radius:3px;display:inline-block;flex:none}
+.marked{line-height:1.95;font-size:15px}
+.marked .s-good{background:rgba(44,138,82,.11);border-radius:4px;padding:0 2px}
+.marked .s-off{background:rgba(207,53,39,.10);border-radius:4px;padding:0 2px;border-bottom:2px solid rgba(207,53,39,.5)}
+.marked .s-weak{background:rgba(217,154,43,.12);border-bottom:2px dashed #d99a2b;border-radius:4px;padding:0 2px}
+.marked .s-verb{background:rgba(138,90,209,.10);border-bottom:2px solid var(--purple);border-radius:4px;padding:0 2px}
+.marked .s-cov{background:rgba(44,138,82,.14);border-radius:3px}
+.marked .s-part{background:rgba(217,154,43,.18);border-radius:3px}
+.marked .s-miss{background:rgba(207,53,39,.09);border-radius:3px;border-bottom:1.5px solid rgba(207,53,39,.45)}
+.m-filler{background:var(--hl);border-radius:3px;padding:0 3px}
+.m-fact{background:var(--red-soft);border-bottom:2px solid var(--red);padding:0 2px}
+.marked .w-term{background:rgba(44,138,82,.22);border-radius:3px;padding:0 2px;font-weight:600}
+.marked .w-off{background:rgba(207,53,39,.13);border-radius:3px;padding:0 2px;border-bottom:1px dashed rgba(207,53,39,.5)}
+.marked .w-num-y{background:rgba(44,138,82,.20);border-radius:3px;padding:0 2px;font-weight:600}
+.imp{padding:0 1px;border-radius:3px}
+.imp.d.y{background:rgba(44,138,82,.18);font-weight:700;color:#1c5c36}
+.imp.d.n{background:rgba(207,53,39,.13);color:#8a2418;text-decoration:underline dotted rgba(207,53,39,.7)}
+.imp.t.y{background:rgba(44,138,82,.14);color:#1c5c36;font-weight:600}
+.imp.t.n{background:rgba(207,53,39,.11);color:#8a2418;text-decoration:underline dotted rgba(207,53,39,.6)}
+.sec-head{display:inline-block;background:linear-gradient(180deg,#fdf6d8,#f9ecb4);border:1px solid #e6d793;color:#4a3b00;font-weight:700;font-size:13px;border-radius:7px;padding:4px 12px;margin:12px 0 4px;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.src-ttl{font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.07em;display:block;margin:12px 0 2px}
+.cov-tag{font-size:10px;padding:1px 6px;border-radius:5px;margin-left:6px;letter-spacing:0;text-transform:none;font-weight:700}
+.cov-tag.full{background:var(--green-soft);color:var(--green)}
+.cov-tag.part{background:#fdf3dc;color:#a06a10}
+.cov-tag.none{background:var(--red-soft);color:var(--red)}
+.sec-stat{font-size:10px;color:var(--ink-soft);margin-left:6px;font-weight:400}
+.src-scroll{max-height:460px;overflow:auto;padding-right:8px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.hl{background:linear-gradient(180deg,transparent 55%,var(--hl) 55% 92%,transparent 92%);padding:0 2px}
+.quiz-q{margin-bottom:14px;padding:12px;border:1px solid #e5e2d3;border-radius:8px;background:#fff}
+.quiz-qtext{font-size:14.5px;line-height:1.5;margin-bottom:8px}
+.quiz-in{width:100%;border:1.5px solid #d8d5c6;border-radius:8px;padding:10px 12px;font:inherit;font-size:16px;background:#fff;color:var(--ink);min-height:44px}
+.quiz-in:focus{outline:none;border-color:var(--blue)}
+.quiz-fb{display:block;margin-top:6px;font-size:13px;font-weight:600}
+.quiz-fb.ok{color:var(--green)}
+.quiz-fb.bad{color:var(--red)}
+.quiz-prompt{display:flex;flex-direction:column;gap:10px}
+.quiz-prompt-btns{display:flex;gap:10px;flex-wrap:wrap}
+#advice{list-style:none;counter-reset:adv}
+#advice li{position:relative;padding:12px 14px 12px 52px;border-radius:8px;margin-bottom:10px;font-size:15px;line-height:1.55;background:#fff;border:1px solid #e8e5d6;animation:pop .4s ease backwards}
+#advice li::before{counter-increment:adv;content:counter(adv);position:absolute;left:12px;top:12px;width:28px;height:28px;border-radius:50%;background:var(--hl);display:grid;place-items:center;font-weight:700;font-size:14px}
+#advice li.good{background:var(--green-soft);border-color:#cfe6d5}
+#advice li.good::before{content:"✓";background:var(--green);color:#fff}
+#advice li .hl{background:linear-gradient(180deg,transparent 55%,var(--hl) 55% 92%,transparent 92%);padding:0 2px}
+.res-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.res-actions .btn{flex:1 1 auto;min-width:140px}
+.hidden{display:none!important}
+#toasts{position:fixed;right:16px;bottom:calc(16px + var(--safe-b));left:16px;z-index:60;display:flex;flex-direction:column;gap:8px;max-width:330px;margin-left:auto}
+@media(max-width:560px){#toasts{left:12px;right:12px;max-width:none}}
+.toast{background:#fff;border:1.5px solid var(--green);color:var(--ink);border-radius:10px;padding:12px 16px;font-size:14px;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);transition:.35s}
+.toast.show{opacity:1;transform:none}
+.toast-mk{color:var(--green);font-weight:700;margin-right:6px}
+.lightbox{position:fixed;inset:0;background:rgba(24,34,54,.72);z-index:70;display:flex;align-items:center;justify-content:center;padding:20px;padding-top:calc(20px + var(--safe-t));padding-bottom:calc(20px + var(--safe-b));overscroll-behavior:contain}
+.lb-card{background:#fff;border-radius:12px;box-shadow:var(--shadow);max-width:720px;width:100%;max-height:90vh;max-height:90dvh;display:flex;flex-direction:column;overflow:hidden;animation:pop .3s ease}
+.lb-head{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);min-height:56px}
+.lb-head b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14.5px}
+#lbImg{width:100%;max-height:46vh;object-fit:contain;background:#f2f1e9}
+.lb-text{padding:14px 16px;overflow:auto;font-size:14px;line-height:1.6;color:var(--ink);white-space:pre-wrap;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.pc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+@media(max-width:560px){.pc-grid{grid-template-columns:repeat(2,1fr)}}
+.pc-cell{background:#f6f7f1;border:1px solid #e5e2d3;border-radius:8px;padding:10px 6px;text-align:center}
+.pc-cell b{display:block;font-size:20px}
+.pc-cell span{font-size:11px;color:var(--ink-soft)}
+.stats-tbl{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
+.stats-tbl th,.stats-tbl td{padding:9px 10px;border-bottom:1px dashed #e5e2d3;text-align:left}
+.stats-tbl th{font-size:12px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.stats-tbl td{white-space:nowrap}
+.stats-tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;margin:0 -6px;padding:0 6px}
+.gdot{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;font-weight:700;font-size:13px;color:#fff}
+.chart-row{display:flex;align-items:flex-end;gap:12px;height:160px;padding:10px 4px 0;overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+.chart-row .cbar{flex:0 0 48px;min-width:48px}
+.chart-row .cbar .b{width:100%;max-width:40px}
+.cbar{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;min-width:46px}
+.cbar .b{width:100%;max-width:54px;border-radius:6px 6px 0 0}
+.cbar .v{font-weight:700;font-size:13px}
+.cbar .n{font-size:11px;color:var(--ink-soft);text-align:center;line-height:1.2}
+.lvl-row{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}
+.lvl-badge{background:linear-gradient(180deg,#fdf6d8,#f9ecb4);border:1px solid #e6d793;color:#4a3b00;font-weight:700;font-size:13px;border-radius:7px;padding:4px 10px}
+.lvl-bar{height:10px;border-radius:99px;background:#edeadd;overflow:hidden;margin-top:8px}
+.lvl-bar i{display:block;height:100%;border-radius:99px;background:var(--green)}
+.ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:10px}
+@media(max-width:480px){.ach-grid{grid-template-columns:1fr}}
+.ach{display:flex;gap:10px;align-items:center;border:1px solid #e5e2d3;border-radius:10px;padding:10px}
+.ach.un{background:var(--green-soft);border-color:#cfe6d5}
+.ach.lk{background:#f3f2ec;opacity:.75}
+.ach-ic{font-size:24px}
+.ach-tx{display:flex;flex-direction:column}
+.ach-tx b{font-size:14px}
+.ach-tx span{font-size:12px;color:var(--ink-soft)}
+footer{border-top:1px solid var(--line);padding:22px 20px calc(34px + var(--safe-b));font-size:13px;color:var(--ink-soft);line-height:1.7;text-align:center;position:relative;z-index:1}
+footer b{color:var(--ink)}
+/* Дополнительно для мобильных: горизонтальные действия в шапке */
+@media(max-width:560px){
+  .board-meta{width:100%;align-items:flex-start;flex-direction:row;flex-wrap:wrap;gap:6px}
+  .chalk-chip{font-size:12px;padding:4px 10px}
+  .logo{font-size:38px}
+  .card .card-title{font-size:19px}
+  .tgrade{width:42px;height:42px}
+  .nn-box{min-width:0;width:100%}
+  #tx{font-size:16px}
+  .res-actions .btn{width:100%}
+}
+</style>
+</head>
+<body>
+<div class="doodles" aria-hidden="true">
+  <span style="top:18%;left:3%">E = mc²</span>
+  <span style="top:52%;right:4%;font-size:60px">§ 12</span>
+  <span style="bottom:12%;left:6%;font-size:44px">х² + у² = r²</span>
+  <span style="top:34%;right:10%;font-size:40px">1812 →</span>
+  <span style="bottom:30%;right:22%;font-size:46px">?</span>
+</div>
+<header class="board">
+  <div class="wrap board-in">
+    <div class="logo">Устно на 5+<small>нейропроверка устных ответов</small></div>
+    <div class="board-meta">
+      <span class="chalk-chip">📖 школьная программа России</span>
+      <span class="chalk-chip" id="dateChip"></span>
+      <span class="chalk-chip" id="authChip" style="cursor:pointer" role="button" tabindex="0">👤 Войти в аккаунт</span>
+    </div>
+    <div class="chalk-note">Сегодня отвечаем устно. Назови тему, приложи учебник, расскажи своими словами — я послушаю и подскажу, что доработать.</div>
+  </div>
+  <svg class="squiggle" viewBox="0 0 1200 14" preserveAspectRatio="none"><path d="M0 7 Q 30 0 60 7 T 120 7 T 180 7 T 240 7 T 300 7 T 360 7 T 420 7 T 480 7 T 540 7 T 600 7 T 660 7 T 720 7 T 780 7 T 840 7 T 900 7 T 960 7 T 1020 7 T 1080 7 T 1140 7 T 1200 7" fill="none" stroke="#e05a4e" stroke-width="3" opacity=".8"/></svg>
+</header>
+<nav class="steps">
+  <div class="wrap steps-in">
+    <a class="step" href="#s1"><b>1</b>Тема</a>
+    <a class="step" href="#s2"><b>2</b>Учебник</a>
+    <a class="step" href="#s3"><b>3</b>Пересказ</a>
+    <a class="step" href="#results"><b>4</b>Разбор</a>
+  </div>
+</nav>
+<div class="wrap" style="padding-top:16px">
+  <div class="gbanner hidden" id="guestBanner">⚠️ Вы работаете без входа в аккаунт — результаты проверок, статистика и достижения сохраняться не будут. <button class="btn green" id="gwLogin" style="padding:8px 14px;font-size:13px">Войти / создать аккаунт</button></div>
+</div>
+<main class="wrap grid">
+  <div class="col">
+    <section class="card reveal" id="s1">
+      <h2>Шаг 1 <span class="num">· тема урока</span></h2>
+      <p class="card-title">Что пересказываем?</p>
+      <div class="field"><label for="topicSubject">Школьный предмет</label>
+        <input type="text" id="topicSubject" list="subjList" placeholder="Например: История России" autocomplete="off" autocapitalize="words" enterkeyhint="next">
+        <datalist id="subjList">
+          <option value="Русский язык"></option><option value="Литература"></option><option value="История России"></option><option value="Всеобщая история"></option><option value="Обществознание"></option><option value="Биология"></option><option value="География"></option><option value="Физика"></option><option value="Химия"></option><option value="Математика"></option><option value="Алгебра"></option><option value="Геометрия"></option><option value="Информатика"></option><option value="Английский язык"></option><option value="ОБЖ"></option><option value="Технология"></option><option value="Музыка"></option><option value="ИЗО"></option>
+        </datalist>
+      </div>
+      <div class="field"><label for="topicTitle">Название темы</label><input type="text" id="topicTitle" placeholder="Например: Куликовская битва, 6 класс" autocomplete="off" autocapitalize="sentences" enterkeyhint="done"></div>
+      <div style="margin-top:10px"><button class="btn green" id="topicUse" style="width:100%">Принять тему</button></div>
+      <div id="topicOk" class="ok-line hidden"></div>
+      <div id="topicList" style="margin-top:12px"></div>
+      <p class="hint" style="margin-top:8px">Темы сохраняются в библиотеку. Учебник к теме прикрепляется в шаге 2 — сканами страниц или текстом.</p>
+    </section>
+    <section class="card reveal" id="progressCard">
+      <h3>📊 Мой прогресс</h3>
+      <p class="hint">Войди в аккаунт, чтобы сохранять результаты.</p>
+    </section>
+    <section class="card reveal" id="achCard">
+      <h3>🏆 Достижения</h3>
+      <p class="hint">Войди в аккаунт, чтобы открывать достижения и уровни.</p>
+    </section>
+    <section class="card reveal" id="exportCard">
+      <h3>💾 Экспорт аккаунта</h3>
+      <p class="hint">Сохрани прогресс на устройство — на случай, если память браузера заполнится или ты сменишь устройство.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+        <button class="btn green" id="exportHtml" disabled>📄 HTML-отчёт</button>
+        <button class="btn ghost" id="exportJson" disabled>🗄 JSON-бэкап</button>
+        <label class="btn ghost" style="cursor:pointer;display:inline-flex">
+          📥 Импорт JSON
+          <input type="file" id="importJson" accept=".json,application/json" hidden>
+        </label>
+      </div>
+      <p class="hint" id="exportHint" style="margin-top:8px"></p>
+    </section>
+    <section class="card reveal" id="s2">
+      <h2>Шаг 2 <span class="num">· учебник</span></h2>
+      <p class="card-title">Материал параграфа</p>
+      <label class="drop" id="drop">
+        <input type="file" id="files" accept="image/*" multiple hidden>
+        <span class="big">📷</span>
+        <b>Загрузи сканы или фото страниц учебника</b>
+        <span class="hint">вопросы и задания после параграфа отсекаются автоматически</span>
+      </label>
+      <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn ghost" id="cameraBtn" type="button">📸 Сделать фото страницы</button>
+      </div>
+      <input type="file" id="cameraInput" accept="image/*" capture="environment" hidden>
+      <div class="ocr-progress" id="ocrBox">
+        <div class="bar"><i id="ocrFill"></i></div>
+        <p id="ocrMsg">Распознаём…</p>
+      </div>
+      <div style="margin-top:12px"><button class="btn ghost" id="pasteToggle">＋ Вставить текст вручную</button></div>
+      <div id="pasteArea" class="hidden">
+        <div class="field"><label for="pasteText">Текст источника</label><textarea id="pasteText" placeholder="Скопируй сюда абзацы из учебника" enterkeyhint="done"></textarea></div>
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn green" id="pasteSave">Добавить</button><button class="btn ghost" id="pasteCancel">Отмена</button></div>
+      </div>
+      <div id="srcList" style="margin-top:14px"></div>
+    </section>
+  </div>
+  <div class="col col-right">
+    <section class="card reveal" id="s3">
+      <h2>Шаг 3 <span class="num">· твой ответ</span></h2>
+      <p class="card-title">Расскажи тему вслух</p>
+      <div class="rec-area">
+        <button class="mic" id="micBtn" title="Начать запись" aria-label="Начать запись">🎙️</button>
+        <canvas id="wave" width="420" height="46"></canvas>
+        <div id="micStatus">Нажми на микрофон и говори (полный ответ — 130–180 слов)</div>
+      </div>
+      <div class="rec-actions">
+        <button class="btn ghost" id="clearBtn">✕ Очистить текст</button>
+        <span class="tx-meta" style="margin:0;align-self:center">⏱ <b id="timer">0:00</b>&nbsp;&nbsp;·&nbsp;&nbsp;слов: <b id="wc">0</b></span>
+      </div>
+      <div style="margin-top:14px">
+        <textarea id="tx" placeholder="Здесь появится расшифровка — её можно поправить руками. Распознанные термины нейросеть сама сверит со словарём учебника." enterkeyhint="done" autocapitalize="sentences"></textarea>
+      </div>
+      <div class="voice-warn" id="voiceWarn"></div>
+    </section>
+    <div class="checkbar reveal">
+      <button id="checkBtn" disabled>Проверить пересказ ✓</button>
+      <p id="checkHint">Сначала назови тему и приложи учебник</p>
+    </div>
+    <section id="results" class="col hidden">
+      <div class="card result-head">
+        <div class="stamp" id="stamp">–</div>
+        <div>
+          <div class="verdict" id="verdict"></div>
+          <div class="res-meta" id="resMeta"></div>
+          <div class="teacher-fix">
+            <span>Оценка учителя (обучает нейросеть):</span>
+            <button class="tgrade" data-g="2" aria-label="Оценка 2">2</button>
+            <button class="tgrade" data-g="3" aria-label="Оценка 3">3</button>
+            <button class="tgrade" data-g="4" aria-label="Оценка 4">4</button>
+            <button class="tgrade" data-g="5" aria-label="Оценка 5">5</button>
+            <button class="icon-btn" id="resetLearn" title="Сбросить обучение" aria-label="Сбросить обучение">↺</button>
+          </div>
+        </div>
+        <div class="nn-box">
+          <div class="nn-title">нейросеть-оценщик · 8 → 8 → 4 → 1</div>
+          <svg id="netSvg" class="net" viewBox="0 0 420 170" aria-hidden="true"></svg>
+          <div class="nn-note" id="nnNote"></div>
+        </div>
+      </div>
+      <div class="card"><h3>Разбор по критериям</h3><div id="bars"></div></div>
+      <div class="card"><h3>Вывод нейросети</h3><div class="summ" id="summ"></div></div>
+      <div class="card">
+        <h3>Пересказ ученика — разметка нейросети</h3>
+        <div class="legend" id="stuLegend"></div>
+        <div class="marked" id="stuMark"></div>
+      </div>
+      <div class="card">
+        <h3>Учебник: смысловые части и что из них попало в ответ</h3>
+        <div class="legend">
+          <span><i class="dot" style="background:rgba(44,138,82,.5)"></i>передано по смыслу</span>
+          <span><i class="dot" style="background:rgba(217,154,43,.6)"></i>частично</span>
+          <span><i class="dot" style="background:rgba(207,53,39,.4)"></i>упущено</span>
+          <span><i class="dot" style="background:rgba(44,138,82,.3);border-bottom:2px solid var(--green)"></i>дата/термин/личность упомянуты</span>
+          <span><i class="dot" style="background:rgba(207,53,39,.2);border-bottom:2px dotted var(--red)"></i>дата/термин/личность не упомянуты</span>
+        </div>
+        <div class="src-scroll marked" id="srcMark"></div>
+      </div>
+      <div class="card">
+        <h3>Советы по доработке</h3>
+        <ol id="advice"></ol>
+        <div class="res-actions">
+          <button class="btn green" id="retryBtn">✎ Исправить и проверить снова</button>
+          <button class="btn ghost" id="newBtn">Новый пересказ</button>
+        </div>
+      </div>
+      <div class="card hidden" id="quizCard">
+        <h3>📝 Тест по параграфу</h3>
+        <div class="quiz-prompt" id="quizPrompt">
+          <p class="hint">Хочешь проверить себя тестом по этому параграфу? Нейросеть составит вопросы по датам, векам, терминам и важным личностям.</p>
+          <div class="quiz-prompt-btns">
+            <button class="btn green" id="quizYes">Да, пройти тест</button>
+            <button class="btn ghost" id="quizNo">Нет, спасибо</button>
+          </div>
+        </div>
+        <div id="quizMain" class="hidden">
+          <p class="hint">Заполни пропуски по памяти, затем нажми «Проверить тест». Даты — цифрами, века — римскими, термины и имена — словом.</p>
+          <div id="quizBody"></div>
+          <div style="margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <button class="btn green" id="quizCheck">Проверить тест</button>
+            <span id="quizResult" class="hint"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div id="lightbox" class="lightbox hidden">
+  <div class="lb-card">
+    <div class="lb-head"><b id="lbName"></b><span class="badge-ok">изучено нейросетью ✓</span><button class="icon-btn" id="lbClose" title="Закрыть" aria-label="Закрыть">✕</button></div>
+    <img id="lbImg" alt="Скан страницы">
+    <div class="lb-text" id="lbText"></div>
+  </div>
+</div>
+
+<div id="authBox" class="lightbox hidden">
+  <div class="lb-card" style="max-width:420px">
+    <div class="lb-head"><b>Вход в аккаунт</b><button class="icon-btn" id="authClose" aria-label="Закрыть">✕</button></div>
+    <div style="padding:16px">
+      <p class="hint">Аккаунт и прогресс хранятся только в этом браузере. Если такого имени ещё нет — аккаунт будет создан автоматически.</p>
+      <div class="field"><label for="authName">Имя ученика</label><input type="text" id="authName" placeholder="Например: Маша Петрова, 6Б" autocomplete="username" autocapitalize="words" enterkeyhint="next"></div>
+      <div class="field"><label for="authPass">Пароль</label><input type="password" id="authPass" placeholder="минимум 4 символа" autocomplete="current-password" enterkeyhint="done"></div>
+      <p class="hint" id="authMsg" style="color:var(--red)"></p>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn green" id="authGo">Войти / создать</button>
+        <button class="btn ghost" id="authCancel">Отмена</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="statsBox" class="lightbox hidden">
+  <div class="lb-card" style="max-width:860px">
+    <div class="lb-head"><b id="statsTitle">Статистика</b><button class="icon-btn" id="statsClose" aria-label="Закрыть">✕</button></div>
+    <div class="lb-text" id="statsBody" style="max-height:72vh;max-height:72dvh"></div>
+  </div>
+</div>
+
+<div id="achBox" class="lightbox hidden">
+  <div class="lb-card" style="max-width:760px">
+    <div class="lb-head"><b id="achTitle">Достижения</b><button class="icon-btn" id="achClose" aria-label="Закрыть">✕</button></div>
+    <div class="lb-text" id="achBody" style="max-height:72vh;max-height:72dvh"></div>
+  </div>
+</div>
+
+<footer>
+  <b>Устно на 5+ · версия 25 · мобильная</b>
+</footer>
+<noscript><div style="position:fixed;left:0;right:0;bottom:0;background:#cf3527;color:#fff;padding:12px;text-align:center;z-index:99;font-family:sans-serif">Включите JavaScript — без него страница не работает.</div></noscript>
+<script>
+"use strict";
+document.documentElement.classList.add("js");
+window.addEventListener("error",e=>{let b=document.getElementById("errBanner");if(!b){b=document.createElement("div");b.id="errBanner";b.style.cssText="position:fixed;left:12px;right:12px;bottom:12px;background:#fff6e2;border:1px solid #d99a2b;color:#7a4a00;padding:10px 14px;border-radius:8px;z-index:99;font:14px Rubik,sans-serif";document.body.appendChild(b);}b.textContent="Ошибка: "+e.message;});
+
+const Auth={
+  AK:"pk5_accounts",SK:"pk5_session",user:null,
+  load(){try{return JSON.parse(localStorage.getItem(this.AK)||"{}")}catch(e){return{}}},
+  save(a){
+    try{localStorage.setItem(this.AK,JSON.stringify(a));}
+    catch(e){
+      const msg="Хранилище браузера заполнено. Сделайте экспорт аккаунта (карточка «Экспорт аккаунта» слева) и удалите старые записи.";
+      alert(msg);
+      if(typeof toast==="function")toast("⚠️ "+msg);
+      throw e;
+    }
+  },
+  async hash(p){
+    try{if(window.crypto&&crypto.subtle){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode("pk5:"+p));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}}catch(e){}
+    let h=5381;const s="pk5:"+p;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;
+    return "djb2_"+(h>>>0).toString(16);
+  },
+  current(){if(!this.user)return null;const a=this.load();return a[this.user]||null;}
+};
+
+const LEVELS=[{name:"Новичок",min:0},{name:"Ученик",min:5},{name:"Опытный",min:15},{name:"Знаток",min:30},{name:"Мастер",min:60},{name:"Легенда",min:100}];
+function levelFor(total){let idx=0;for(let i=0;i<LEVELS.length;i++){if(total>=LEVELS[i].min)idx=i;}const cur=LEVELS[idx];const next=LEVELS[idx+1]||null;return {idx,name:cur.name,min:cur.min,next};}
+const ACHIEVEMENTS=[
+  {id:"first",icon:"🎯",title:"Первый шаг",desc:"Сделай свою первую проверку",check:s=>s.total>=1},
+  {id:"wordforword",icon:"📜",title:"Слово в слово",desc:"Пересказ с полнотой 95% и выше",check:s=>s.maxCoverage>=95},
+  {id:"excellent",icon:"🌟",title:"Отличник",desc:"Получи пятёрку",check:s=>s.fives>=1},
+  {id:"five5",icon:"🏅",title:"Пять пятёрок",desc:"Набери 5 пятёрок",check:s=>s.fives>=5},
+  {id:"improve",icon:"📈",title:"Самосовершенствование",desc:"Улучши результат по теме",check:s=>s.improved},
+  {id:"height",icon:"🚀",title:"Взятая высота",desc:"Пятёрка по теме, где раньше была тройка",check:s=>s.height},
+  {id:"multi3",icon:"📚",title:"Разносторонний",desc:"Проверки по 3 предметам",check:s=>s.subjects>=3},
+  {id:"erudite",icon:"🎓",title:"Эрудит",desc:"Проверки по 5 предметам",check:s=>s.subjects>=5},
+  {id:"streak3",icon:"🔥",title:"Серия ×3",desc:"Проверки 3 дня подряд",check:s=>s.longest>=3},
+  {id:"streak7",icon:"⚡",title:"Серия ×7",desc:"Проверки 7 дней подряд",check:s=>s.longest>=7},
+  {id:"streak30",icon:"💎",title:"Серия ×30",desc:"Проверки 30 дней подряд",check:s=>s.longest>=30},
+  {id:"total10",icon:"📖",title:"Читатель",desc:"10 проверок",check:s=>s.total>=10},
+  {id:"total50",icon:"🏃",title:"Марафонец",desc:"50 проверок",check:s=>s.total>=50},
+  {id:"legend",icon:"👑",title:"Легенда",desc:"100 проверок",check:s=>s.total>=100},
+  {id:"fast",icon:"⏱",title:"Быстрый старт",desc:"3 проверки за один день",check:s=>s.fast}
+];
+function evalAchievements(stats){return ACHIEVEMENTS.filter(a=>a.check(stats)).map(a=>a.id);}
+function dayKey(ts){const d=new Date(ts);return new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime();}
+function computeStats(results){
+  const total=results.length;
+  const fives=results.filter(r=>r.grade>=4.5).length;
+  const subjects=[...new Set(results.map(r=>r.subject))];
+  const maxCoverage=results.reduce((m,r)=>Math.max(m,r.coverage||0),0);
+  const daySet=[...new Set(results.map(r=>dayKey(r.ts)))].sort((a,b)=>a-b);
+  let longest=0,cur=0;
+  for(let i=0;i<daySet.length;i++){if(i===0){cur=1;}else{const diff=(daySet[i]-daySet[i-1])/86400000;cur=diff===1?cur+1:1;}longest=Math.max(longest,cur);}
+  const today=dayKey(Date.now());
+  let streak=0;
+  if(daySet.includes(today)||daySet.includes(today-86400000)){let d=daySet.includes(today)?today:today-86400000;streak=1;while(daySet.includes(d-86400000)){streak++;d-=86400000;}}
+  const perDay={};
+  results.forEach(r=>{const k=dayKey(r.ts);perDay[k]=(perDay[k]||0)+1;});
+  const fast=Object.values(perDay).some(v=>v>=3);
+  const byTopic={};
+  results.forEach(r=>{const k=(r.subject||"")+"||"+r.topic;(byTopic[k]=byTopic[k]||[]).push(r);});
+  let improved=false,height=false;
+  Object.values(byTopic).forEach(arr=>{
+    arr.sort((a,b)=>a.ts-b.ts);
+    for(let i=1;i<arr.length;i++){if(arr[i].grade>arr[i-1].grade){improved=true;}}
+    const firstGrade=arr[0].grade;
+    const laterHigh=arr.slice(1).some(x=>x.grade>=4.5);
+    if(firstGrade<=3.5&&laterHigh)height=true;
+  });
+  return {total,fives,subjects:subjects.length,maxCoverage,longest,streak,fast,improved,height};
+}
+function updateAchievements(){
+  if(!Auth.user)return [];
+  const all=Auth.load();
+  const acc=all[Auth.user];
+  if(!acc)return [];
+  const results=acc.results||[];
+  const stats=computeStats(results);
+  const unlocked=evalAchievements(stats);
+  const prev=acc.achievements||[];
+  const newly=unlocked.filter(id=>prev.indexOf(id)<0);
+  if(newly.length){acc.achievements=[...prev,...newly];try{Auth.save(all);}catch(e){}}
+  return newly;
+}
+
+const state={topic:null,customTitle:"",subjectName:"",sources:[],grade:null};
+const store={load(){try{return JSON.parse(localStorage.getItem("pk5_mytopics")||"[]")}catch(e){return[]}},save(a){try{localStorage.setItem("pk5_mytopics",JSON.stringify(a))}catch(e){}}};
+let myTopics=[];
+function saveTopics(arr){
+  myTopics=arr;
+  if(Auth.user){const acc=Auth.load();if(acc[Auth.user]){acc[Auth.user].topics=arr;try{Auth.save(acc);}catch(e){}}}
+  else store.save(arr);
+}
+function saveResult(r,grade){
+  if(!Auth.user)return;
+  const all=Auth.load();const a=all[Auth.user];if(!a)return;
+  if(!a.results)a.results=[];
+  a.results.push({ts:Date.now(),subject:state.subjectName||"—",topic:r.title,grade:Math.round(grade*10)/10,coverage:Math.round((r.coverage||0)*100),words:r.words});
+  if(a.results.length>500)a.results=a.results.slice(-500);
+  try{Auth.save(all);}catch(e){return;}
+  const newly=updateAchievements();
+  newly.forEach(id=>{const ach=ACHIEVEMENTS.find(x=>x.id===id);if(ach)toast(`🏆 Достижение: ${ach.title}!`);});
+}
+
+/* ====================================================================
+   РУССКИЙ СТЕММЕР ПОРТЕРА
+   ==================================================================== */
+const RU_VOWELS = "аеиоуыэюя";
+function ruIsVowel(c){ return RU_VOWELS.indexOf(c) >= 0; }
+function ruFindRV(word){const lower=word.toLowerCase();for(let i=0;i<lower.length;i++){if(ruIsVowel(lower[i]))return i+1;}return -1;}
+function ruFindR1(word){const lower=word.toLowerCase();let seenVowel=false;for(let i=0;i<lower.length;i++){if(!seenVowel){if(ruIsVowel(lower[i]))seenVowel=true;}else{if(!ruIsVowel(lower[i]))return i+1;}}return -1;}
+function ruFindR2(word){const r1=ruFindR1(word);if(r1<0)return -1;const lower=word.toLowerCase();let seenVowel=false;for(let i=r1;i<lower.length;i++){if(!seenVowel){if(ruIsVowel(lower[i]))seenVowel=true;}else{if(!ruIsVowel(lower[i]))return i+1;}}return -1;}
+const RU_PERFECTIVE_GERUND = ['вшись','вши','ившись','ивши','ывшись','ывши','ив','ыв','в'];
+const RU_REFLEXIVE = ['ся','сь'];
+const RU_ADJECTIVE = ['ими','ыми','его','ого','ему','ому','ее','ие','ые','ое','ей','ий','ый','ой','ем','им','ым','ом','их','ых','ую','юю','ая','яя','ою','ею'];
+const RU_PARTICIPLE = ['ем','нн','вш','ющ','щ'];
+const RU_VERB = ['ила','ыла','ена','ейте','уйте','ите','или','ыли','ей','уй','ил','ыл','им','ым','ен','ило','ыло','ено','ят','ует','уют','ит','ыт','ены','ить','ыть','ишь','ую','ю','ла','на','ете','йте','ли','й','л','ем','н','ло','но','ет','ют','ны','ть','ешь','нно'];
+const RU_NOUN = ['иями','ями','ами','ией','иям','ием','иях','ия','ье','ев','ов','ие','еи','ии','ей','ой','ий','й','ем','ам','ом','о','у','ах','ях','ы','ь','ию','ью','ю','ья','я','а','и'];
+const RU_SUPERLATIVE = ['ейш','ейше'];
+const RU_DERIVATIONAL = ['ость','ост'];
+function ruStripInRegion(word,endings,rvStart){if(rvStart<0||rvStart>=word.length)return null;const rv=word.slice(rvStart);let best=null;for(const e of endings){if(rv.endsWith(e)&&(best===null||e.length>best.length))best=e;}return best;}
+function porterRuStem(word){
+  if(!word||word.length<3)return word;
+  const rvStart=ruFindRV(word);if(rvStart<0)return word;
+  let w=word;let step1Done=false;
+  let ger=ruStripInRegion(w,RU_PERFECTIVE_GERUND,rvStart);
+  if(ger){w=w.slice(0,w.length-ger.length);step1Done=true;}
+  if(!step1Done){
+    let refl=ruStripInRegion(w,RU_REFLEXIVE,rvStart);
+    const wNoRefl=refl?w.slice(0,w.length-refl.length):w;
+    const rvNoReflStart=ruFindRV(wNoRefl);
+    let adj=ruStripInRegion(wNoRefl,RU_ADJECTIVE,rvNoReflStart);
+    if(adj){w=wNoRefl.slice(0,wNoRefl.length-adj.length);step1Done=true;}
+    if(!step1Done){let part=ruStripInRegion(wNoRefl,RU_PARTICIPLE,rvNoReflStart);if(part){w=wNoRefl.slice(0,wNoRefl.length-part.length);step1Done=true;}}
+    if(!step1Done){let verb=ruStripInRegion(wNoRefl,RU_VERB,rvNoReflStart);if(verb){w=wNoRefl.slice(0,wNoRefl.length-verb.length);step1Done=true;}}
+    if(!step1Done){let noun=ruStripInRegion(wNoRefl,RU_NOUN,rvNoReflStart);if(noun){w=wNoRefl.slice(0,wNoRefl.length-noun.length);step1Done=true;}}
+  }
+  const rv2=ruFindRV(w);if(rv2>=0&&w.length>rv2&&w.endsWith('и')){w=w.slice(0,-1);}
+  const r2=ruFindR2(w);
+  if(r2>=0&&r2<w.length){const r2Part=w.slice(r2);let deriv=null;for(const e of RU_DERIVATIONAL){if(r2Part.endsWith(e)&&(deriv===null||e.length>deriv.length))deriv=e;}if(deriv)w=w.slice(0,w.length-deriv.length);}
+  const rv4=ruFindRV(w);
+  if(rv4>=0){
+    const rvPart=w.slice(rv4);
+    if(rvPart.endsWith('нн')){w=w.slice(0,-2);}
+    else{
+      let sup=null;
+      for(const e of RU_SUPERLATIVE){if(rvPart.endsWith(e)&&(sup===null||e.length>sup.length))sup=e;}
+      if(sup){w=w.slice(0,w.length-sup.length);const rv4b=ruFindRV(w);if(rv4b>=0&&w.slice(rv4b).endsWith('нн'))w=w.slice(0,-2);}
+      else if(rvPart.endsWith('ь')){w=w.slice(0,-1);}
+    }
+  }
+  return w||word;
+}
+
+/* ====================================================================
+   Токенизация и лемматизация
+   ==================================================================== */
+const STOP=new Set(("и в во не что он на я с со как а то все она так его но да ты к у же вы за бы по только её мне было вот от меня ещё нет о из ему теперь когда даже ну вдруг ли если уже или ни быть был него до вас нибудь опять уж вам ведь там потом себя ничего ей может они тут где есть надо ней для мы тебя их чем была сам чтоб без будто чего раз тоже себе под будет ж тогда кто этот того потому этого какой ним этим этом про мой тем чтобы нее сейчас были куда зачем никогда этом можно при наконец два об другой хоть после над больше тот через эти нас про них тут всё самые чтобы этот эта эти это этой этого этим этих этому этой этом этом об этой этому этой этим").split(" "));
+const COMMON=new Set(("была было были стал стала стало стали очень много мало где куда откуда перед около между почти всегда иногда сегодня вчера завтра снова хотя более менее самый самая самое такие таким такая такое будто словно среди вдоль вокруг течение продолжение связи отношении впрочем целом общем частности основном итоге конце начале середине ходе процессе результате качестве виде форме рамках области сфере направлении сторону просто конечно возможно нужно надо нельзя хорошо плохо лучше хуже каждый каждая каждое чей чья чье какие какой какая какое почему зачем поэтому потому если чтобы ибо однако").split(" "));
+const NOT_TERM=new Set(("после перед когда если потому поэтому затем потом также так итак однако значит далее теперь сначала кроме благодаря вследствие несмотря например причем причём поскольку хотя чтобы который которая которые которого которой которых которому которым которыми этот эта эти тот та те весь вся все свой своя свои наш наша наши ваш ваша ваши но или либо тоже ещё уже только именно как будто словно так что таки вот ведь мол же").split(" "));
+const POS_V=["ется","ются","ет","ёт","ут","ют","ат","ят","ал","ял","ел","ил","ыл","ать","ять","еть","ить","ыть","оть","уть","лся","лась","лось","лись","ен","ена","ено","ены","ущ","ющ","ащ","ящ","вш","ишь","ем","ешь","им","ите"];
+const POS_A=["ый","ий","ой","ая","яя","ое","ее","ые","ие","ого","его","ую","юю","ым","им","ом","ем","ых","их"];
+const POS_N=["ия","ие","ий","ость","ение","ание","ник","ция","ство","тель","тор","тура","изм","ика","ота","ина","атель","ов","ев","ам","ям","ом","ем","ах","ях"];
+const PRONS=new Set(("он она они оно его её их ему ей им это этого этому этой эти этот эта который которая которые которого там туда тогда так такой такая такое"));
+const IRREG={"люди":"человек","человека":"человек","человеку":"человек","человеком":"человек","человеке":"человек","года":"год","году":"год","годом":"год","годов":"год","годы":"год","войны":"война","войне":"война","войну":"война","войной":"война","войн":"война","русью":"русь","руси":"русь","земли":"земля","земле":"земля","землю":"земля","князья":"князь","князей":"князь","князю":"князь","князем":"князь","детей":"ребенок","ребенка":"ребенок","детям":"ребенок"};
+const LEM_CACHE=new Map();
+function lemma(w){
+  w=norm(w);
+  if(LEM_CACHE.has(w))return LEM_CACHE.get(w);
+  let res;
+  if(IRREG[w])res={l:IRREG[w],pos:"n"};
+  else{
+    let pos="x";
+    if(PRONS.has(w))pos="p";
+    else if(POS_V.some(e=>w.endsWith(e)))pos="v";
+    else if(POS_A.some(e=>w.endsWith(e)))pos="a";
+    else if(POS_N.some(e=>w.endsWith(e)))pos="n";
+    const stemmed=porterRuStem(w);
+    res={l:stemmed||w,pos};
+  }
+  LEM_CACHE.set(w,res);
+  return res;
+}
+const norm=t=>t.toLowerCase().replace(/ё/g,"е");
+const tokenize=t=>norm(t).split(/[^a-zа-я0-9]+/i).filter(Boolean);
+const stem=w=>lemma(w).l;
+function isContent(w){return w.length>=4&&!STOP.has(w)&&!/^\d+$/.test(w);}
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const wc=t=>(t.trim().match(/\S+/g)||[]).length;
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const cut=(s,n)=>{s=s.replace(/\s+/g," ").trim();return s.length>n?s.slice(0,n).trim()+"…":s;};
+function kwTokens(k){return tokenize(k).filter(w=>w.length>=4&&!STOP.has(w));}
+function vec(tokens){const m=new Map();for(const t of tokens){const s=stem(t);m.set(s,(m.get(s)||0)+1);}return m;}
+function cosine(a,b){let dot=0;const small=a.size<b.size?a:b,big=small===a?b:a;for(const[k,v]of small)dot+=v*(big.get(k)||0);let na=0,nb=0;for(const v of a.values())na+=v*v;for(const v of b.values())nb+=v*v;return dot/Math.sqrt((na||1)*(nb||1));}
+function kendall(seq){let c=0,d=0;for(let i=0;i<seq.length;i++)for(let j=i+1;j<seq.length;j++){if(seq[i]<seq[j])c++;else if(seq[i]>seq[j])d++;}const p=seq.length*(seq.length-1)/2;return p?(c-d)/p:1;}
+function related(a,b){if(a===b)return true;const m=Math.min(a.length,b.length);return m>=5&&(a.startsWith(b)||b.startsWith(a));}
+
+let SPELL_DICT=null;
+function buildSpellDict(){
+  const set=new Set();const byKey=new Map();
+  const pushWord=w=>{const low=norm(w);if(low.length<4||STOP.has(low)||set.has(low))return;set.add(low);const k=low[0]+":"+low.length;if(!byKey.has(k))byKey.set(k,[]);byKey.get(k).push(low);};
+  const texts=state.sources.map(s=>s.text||"");
+  if(state.topic)texts.push(state.topic.t);
+  texts.forEach(t=>{const m=t.match(/[а-яёА-ЯЁ\-]{4,}/g)||[];m.forEach(pushWord);});
+  SPELL_DICT={set,byKey};
+}
+function invalidateDict(){SPELL_DICT=null;}
+function editDist2(a,b){
+  const la=a.length,lb=b.length;
+  if(Math.abs(la-lb)>2)return 3;
+  let prev=new Array(lb+1),cur=new Array(lb+1);
+  for(let j=0;j<=lb;j++)prev[j]=j;
+  for(let i=1;i<=la;i++){cur[0]=i;let rowMin=cur[0];for(let j=1;j<=lb;j++){const cost=a[i-1]===b[j-1]?0:1;cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+cost);if(cur[j]<rowMin)rowMin=cur[j];}if(rowMin>2)return 3;const tmp=prev;prev=cur;cur=tmp;}
+  return prev[lb];
+}
+function fixSpelling(text){
+  if(!SPELL_DICT)buildSpellDict();
+  if(!SPELL_DICT||SPELL_DICT.set.size<5)return text;
+  return text.replace(/[а-яёА-ЯЁ]{4,}/g,m=>{
+    const low=norm(m);
+    if(STOP.has(low)||COMMON.has(low)||SPELL_DICT.set.has(low))return m;
+    const cands=(SPELL_DICT.byKey.get(low[0]+":"+low.length)||[]).concat(SPELL_DICT.byKey.get(low[0]+":"+(low.length-1))||[]).concat(SPELL_DICT.byKey.get(low[0]+":"+(low.length+1))||[]);
+    let best=null,bd=3;
+    for(const c of cands){const d=editDist2(low,c);if(d<bd){bd=d;best=c;}}
+    if(best&&bd<=1)return best;
+    if(best&&bd===2&&low.length>=6&&best.length>=6&&low.slice(0,2)===best.slice(0,2))return best;
+    return m;
+  });
+}
+function countWordChanges(a,b){const A=a.split(/\s+/),B=b.split(/\s+/);let n=0;const L=Math.min(A.length,B.length);for(let i=0;i<L;i++)if(A[i]!==B[i])n++;return n+Math.abs(A.length-B.length);}
+
+/* ====================================================================
+   РИМСКИЕ ВЕКА
+   ==================================================================== */
+function romanToInt(s){
+  const map={I:1,V:5,X:10,L:50,C:100,D:500,M:1000};
+  s=String(s).toUpperCase();
+  if(!/^[IVXLCDM]+$/.test(s))return 0;
+  let total=0;
+  for(let i=0;i<s.length;i++){const cur=map[s[i]],next=map[s[i+1]]||0;total+=cur<next?-cur:cur;}
+  return total;
+}
+function isRomanNumeral(s){if(!/^[IVXLCDM]{1,7}$/.test(s))return false;const n=romanToInt(s);return n>=1&&n<=100;}
+function extractRomanCenturies(text){
+  if(!text)return [];
+  const result=[];
+  const re=/\b([IVXLCDM]{1,7})\b/g;
+  let m;
+  while((m=re.exec(text))){
+    const r=m[1];
+    if(!isRomanNumeral(r))continue;
+    const pos=m.index,len=r.length;
+    const before=text.slice(Math.max(0,pos-20),pos).toLowerCase();
+    const after=text.slice(pos+len,pos+len+22).toLowerCase();
+    const ctxBefore=/(^|[^а-яёa-z])(в|с|до|от|к)\s+$/.test(before);
+    const ctxAfter=/^\s*(век|веке|века|веков|вв?\.|столети)/.test(after);
+    if(ctxBefore||ctxAfter)result.push(r.toUpperCase());
+  }
+  return result;
+}
+function extractStudentNums(text){
+  const s=new Set();
+  (text.match(/\b\d{3,4}\b/g)||[]).forEach(n=>s.add(n));
+  extractRomanCenturies(text).forEach(r=>s.add(r));
+  return s;
+}
+
+const HEAD_MARKERS=/^(глава|часть|параграф|раздел|тема|пункт|§|подраздел|введение|заключение)/i;
+const STOP_HEAD=/^(вопросы?|задания?|подумай(те)?|проверь(те)?\s*себя|подвед[еи]\s*итоги?|итоги|выводы?|запомни(те)?)\b/i;
+const CAPTION_RE=/^(рис\.?|рисунок|ил\.?|иллюстраци\w*|фото\w*|картина|карта|схема|табл\.?|таблица|портрет|гравюра|икона)\b/i;
+const PAGE_END=/^\s*—?\s*\d{1,4}\s*—?\s*$/;
+const VOWELS="аеёиоуыэюя";
+function isStopHead(ln){if(/[.;]$/.test(ln))return false;const words=ln.split(" ").filter(Boolean);if(words.length>4)return false;return STOP_HEAD.test(ln.trim());}
+function isCaption(ln){if(CAPTION_RE.test(ln))return true;if(/^«[^»]{2,60}»\.?$/.test(ln))return true;return false;}
+function cleanOcrText(data){
+  try{
+    if(data.blocks&&data.blocks.length){
+      const out=[];
+      data.blocks.forEach(b=>{(b.paragraphs||[]).forEach(p=>{(p.lines||[]).forEach(l=>{
+        const words=(l.words||[]).filter(w=>{
+          const t=(w.text||"").trim();if(!t)return false;
+          if(w.confidence!=null&&w.confidence<50)return false;
+          const letters=t.toLowerCase().replace(/[^а-яёa-z]/g,"");
+          if(letters.length>=2){let v=0;for(const ch of letters)if(VOWELS.indexOf(ch)>=0)v++;if(v/letters.length<.15)return false;}
+          return true;
+        }).map(w=>w.text.trim());
+        const line=words.join(" ").replace(/\s+/g," ").trim();
+        const lettersAll=line.replace(/[^а-яёa-zА-ЯЁA-Z]/g,"");
+        if(line&&lettersAll.length>=Math.max(2,line.length*.35))out.push(line);
+      });});});
+      if(out.length)return out.join("\n");
+    }
+  }catch(e){}
+  return data.text||"";
+}
+function readDocument(text){
+  const lines=text.split(/\n+/).map(l=>l.replace(/\s+/g," ").trim()).filter(l=>l.length>0);
+  if(lines.length<2)return {sections:[{heading:null,text:text.replace(/\n+/g," ").trim()}]};
+  const bodyLens=lines.filter(l=>l.split(" ").length>6).map(l=>l.split(" ").length);
+  const avgBodyLen=bodyLens.length?bodyLens.reduce((a,b)=>a+b,0)/bodyLens.length:14;
+  const isHead=(ln,idx)=>{
+    if(ln.length<3||ln.length>90)return false;
+    if(PAGE_END.test(ln))return false;
+    if(/^\d{1,4}[\.\)]?\s*$/.test(ln))return false;
+    if(/^\d{1,4}\s*[а-яёa-z]/i.test(ln))return false;
+    const words=ln.split(" ").filter(Boolean);
+    if(words.length>10)return false;
+    if(/[.;]$/.test(ln))return false;
+    if(HEAD_MARKERS.test(ln))return true;
+    const letters=(ln.match(/[a-zа-яё]/gi)||[]);
+    const up=(ln.match(/[A-ZА-ЯЁ]/g)||[]).length;
+    const upRatio=letters.length?up/letters.length:0;
+    if(words.length<=8&&upRatio>=.75&&letters.length>=4)return true;
+    if(/^[А-ЯЁ][а-яё]/.test(ln)&&words.length<=8&&ln.length<Math.max(50,avgBodyLen*3)){
+      if(!/,/.test(ln)){const next=lines[idx+1];if(next&&next.split(" ").length>=Math.max(6,avgBodyLen*.7))return true;}
+    }
+    return false;
+  };
+  const secs=[];let cur={heading:null,lines:[]};
+  for(let idx=0;idx<lines.length;idx++){
+    const ln=lines[idx];
+    if(isStopHead(ln))break;
+    if(isCaption(ln))continue;
+    if(isHead(ln,idx)){
+      const t=cur.lines.join(" ").trim();
+      if(t){secs.push(cur);cur={heading:ln,lines:[]};}
+      else cur.heading=ln;
+    }else cur.lines.push(ln);
+  }
+  const lastT=cur.lines.join(" ").trim();
+  if(lastT)secs.push(cur);
+  const out=secs.map(s=>({heading:s.heading,text:s.lines.join(" ").trim()})).filter(s=>s.text);
+  if(!out.length)out.push({heading:null,text:text.replace(/\n+/g," ").trim()});
+  return {sections:out};
+}
+
+function softCosine(a,b){
+  let dot=0;
+  a.forEach((va,ka)=>{
+    if(b.has(ka)){dot+=va*b.get(ka);return;}
+    if(ka.length<5)return;
+    for(const [kb,vb] of b){const m=Math.min(ka.length,kb.length);if(m>=5&&(ka.startsWith(kb)||kb.startsWith(ka))){dot+=va*vb*.9;break;}}
+  });
+  let na=0,nb=0;a.forEach(v=>na+=v*v);b.forEach(v=>nb+=v*v);
+  return dot/Math.sqrt((na||1)*(nb||1));
+}
+function addVec(dst,src){src.forEach((v,k)=>dst.set(k,(dst.get(k)||0)+v));}
+function cosineMap(a,b){let dot=0;a.forEach((v,k)=>{if(b.has(k))dot+=v*b.get(k);});let na=0,nb=0;a.forEach(v=>na+=v*v);b.forEach(v=>nb+=v*v);return dot/Math.sqrt((na||1)*(nb||1));}
+function cosArr(a,b){let d=0,na=0,nb=0;for(let i=0;i<a.length;i++){d+=a[i]*b[i];na+=a[i]*a[i];nb+=b[i]*b[i];}return d/Math.sqrt((na||1)*(nb||1));}
+function gramSchmidt(M,n,k){
+  const out=new Float64Array(n*k);
+  for(let c=0;c<k;c++){
+    for(let i=0;i<n;i++)out[i*k+c]=M[i*k+c];
+    for(let p=0;p<c;p++){let dot=0;for(let i=0;i<n;i++)dot+=out[i*k+p]*out[i*k+c];for(let i=0;i<n;i++)out[i*k+c]-=dot*out[i*k+p];}
+    let nrm=0;for(let i=0;i<n;i++)nrm+=out[i*k+c]*out[i*k+c];
+    nrm=Math.sqrt(nrm)||1;
+    for(let i=0;i<n;i++)out[i*k+c]/=nrm;
+  }
+  return out;
+}
+function buildLSA(sents){
+  const n=sents.length;
+  if(n<4)return {ready:false};
+  const df=new Map();
+  sents.forEach(s=>s.content.forEach(t=>df.set(t,(df.get(t)||0)+1)));
+  const vocab=[...df.keys()];
+  if(vocab.length<6)return {ready:false};
+  const V=vocab.length;
+  const idx=new Map();vocab.forEach((t,i)=>idx.set(t,i));
+  const A=new Float64Array(V*n);
+  sents.forEach((s,j)=>{
+    const tf=new Map();s.terms.forEach(t=>tf.set(t,(tf.get(t)||0)+1));
+    tf.forEach((c,t)=>{const i=idx.get(t);if(i!=null)A[i*n+j]=c*(Math.log((n+1)/(df.get(t)+1))+1);});
+  });
+  const G=new Float64Array(n*n);
+  for(let i=0;i<n;i++)for(let j=i;j<n;j++){let s2=0;for(let k2=0;k2<V;k2++)s2+=A[k2*n+i]*A[k2*n+j];G[i*n+j]=s2;G[j*n+i]=s2;}
+  const K=Math.min(12,n-1);
+  let seed=12345;const rnd=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;};
+  let Q0=new Float64Array(n*K);for(let i=0;i<n*K;i++)Q0[i]=rnd()-.5;
+  let Q=gramSchmidt(Q0,n,K);
+  for(let it=0;it<60;it++){
+    const Z=new Float64Array(n*K);
+    for(let i=0;i<n;i++)for(let c=0;c<K;c++){let s=0;for(let j=0;j<n;j++)s+=G[i*n+j]*Q[j*K+c];Z[i*K+c]=s;}
+    Q=gramSchmidt(Z,n,K);
+  }
+  const eig=[];
+  for(let c=0;c<K;c++){
+    let num=0,den=0;
+    for(let i=0;i<n;i++){let gi=0;for(let j=0;j<n;j++)gi+=G[i*n+j]*Q[j*K+c];num+=gi*Q[i*K+c];den+=Q[i*K+c]*Q[i*K+c];}
+    eig.push(Math.max(1e-9,num/Math.max(den,1e-9)));
+  }
+  const U=new Float64Array(V*K);
+  for(let c=0;c<K;c++){const s2=Math.sqrt(eig[c]);for(let i=0;i<V;i++){let s3=0;for(let j=0;j<n;j++)s3+=A[i*n+j]*Q[j*K+c];U[i*K+c]=s3/s2;}}
+  const sentZ=sents.map((s,j)=>{const z=new Float64Array(K);for(let c=0;c<K;c++)z[c]=Q[j*K+c]*Math.sqrt(eig[c]);return z;});
+  function embedMap(m){const z=new Float64Array(K);m.forEach((v,t)=>{const i=idx.get(t);if(i!=null)for(let c=0;c<K;c++)z[c]+=v*U[i*K+c];});return z;}
+  return {ready:true,embedMap,sentZ};
+}
+function sentSense(c,content){
+  let s=0;
+  const pos=c.toks.map(t=>lemma(t).pos);
+  const verbs=pos.filter(p=>p==="v").length;
+  const nouns=pos.filter(p=>p==="n").length;
+  if(verbs===0)return 0;
+  s+=.35;
+  if(nouns>=1)s+=.2;
+  if(content.length>=4)s+=.2;else s+=content.length*.04;
+  if(c.toks.length>=4&&c.toks.length<=28)s+=.15;
+  if(c.toks.length>12&&/[,;]/.test(c.raw))s+=.1;
+  return clamp(s,0,1);
+}
+function segmentSentences(sents){
+  const n=sents.length;
+  if(n<=1)return [{from:0,to:n}];
+  if(n<6){const res=[];const parts=Math.max(2,Math.ceil(n/2));const size=Math.ceil(n/parts);for(let i=0;i<n;i+=size)res.push({from:i,to:Math.min(n,i+size)});return res;}
+  const w=2,gaps=[];
+  for(let i=w;i<=n-w;i++){let va=new Map(),vb=new Map();for(let j=i-w;j<i;j++)addVec(va,sents[j].vec);for(let j=i;j<i+w;j++)addVec(vb,sents[j].vec);gaps.push({gap:i,s:cosineMap(va,vb)});}
+  const vals=gaps.map(g=>g.s);
+  const mean=vals.reduce((a,b)=>a+b,0)/vals.length;
+  const sd=Math.sqrt(vals.reduce((a,b)=>a+(b-mean)*(b-mean),0)/vals.length);
+  const thresh=mean-.5*sd;
+  const bounds=[0];
+  gaps.forEach((g,i)=>{const p=i>0?gaps[i-1].s:Infinity,nx=i<gaps.length-1?gaps[i+1].s:Infinity;if(g.s<p&&g.s<=nx&&g.s<thresh)bounds.push(g.gap);});
+  bounds.push(n);
+  let secs=[];
+  for(let i=0;i<bounds.length-1;i++)secs.push({from:bounds[i],to:bounds[i+1]});
+  const merged=[];
+  secs.forEach(s=>{let cnt=0;for(let i=s.from;i<s.to;i++)cnt+=sents[i].wc;if(merged.length&&(s.to-s.from<2||cnt<20))merged[merged.length-1].to=s.to;else merged.push({from:s.from,to:s.to});});
+  while(merged.length>8){
+    let bi=0,bv=-1;
+    for(let i=0;i<merged.length-1;i++){let va=new Map(),vb=new Map();for(let j=merged[i].from;j<merged[i].to;j++)addVec(va,sents[j].vec);for(let j=merged[i+1].from;j<merged[i+1].to;j++)addVec(vb,sents[j].vec);const s=cosineMap(va,vb);if(s>bv){bv=s;bi=i;}}
+    merged[bi].to=merged[bi+1].to;merged.splice(bi+1,1);
+  }
+  return merged.length?merged:[{from:0,to:n}];
+}
+function literalTitle(from,to,sents){
+  if(from>=sents.length)return "материал";
+  const first=sents[from];
+  const words=first.content.slice(0,4);
+  if(!words.length)return "материал";
+  const out=[];
+  words.forEach(s=>{for(const w of first.toks){if(stem(w)===s){out.push(w);break;}}});
+  let s=out.join(" ");
+  if(!s)return "материал";
+  return s.charAt(0).toUpperCase()+s.slice(1);
+}
+const SENT_MARKERS_MULTI=["после этого","кроме того","таким образом","в итоге","в заключение","например","во-первых","во-вторых","в-третьих","при этом","в результате","и вот","в начале","в первую очередь","прежде всего","благодаря тому"];
+const SENT_MARKERS_SINGLE=new Set(["затем","потом","итак","значит","поэтому","однако","далее","теперь","сначала","также","следовательно","благодаря"]);
+function cleanW(w){return norm(w).replace(/[^а-яёa-z0-9]/g,"");}
+let speechPauseMarks=[];
+let lastFinalTs=null;
+
+function restoreSentences(text, pauseMarks){
+  const dotCount=(text.match(/[.!?…]+/g)||[]).length;
+  const wordsCount=wc(text);
+  if(wordsCount===0)return [];
+  if(dotCount>=Math.max(1,Math.floor(wordsCount/28)))return text.match(/[^.!?…]+[.!?…]*/g)||[text];
+  const tokens=text.trim().split(/\s+/);
+  const pauseTokenMap=new Map();
+  if(pauseMarks&&pauseMarks.length){
+    const charPositions=[];
+    let cp=0;
+    for(const t of tokens){
+      const idx=text.indexOf(t,cp);
+      charPositions.push(idx<0?cp:idx);
+      cp=(idx<0?cp:idx)+t.length;
+    }
+    for(const pm of pauseMarks){
+      let best=-1,bestDist=Infinity;
+      for(let i=0;i<charPositions.length;i++){
+        const d=Math.abs(charPositions[i]-pm.charPos);
+        if(d<bestDist){bestDist=d;best=i;}
+      }
+      if(best>0&&bestDist<50)pauseTokenMap.set(best,pm.gapMs);
+    }
+  }
+  const out=[];let cur=[];
+  for(let i=0;i<tokens.length;i++){
+    cur.push(tokens[i]);
+    if(cur.length>=20){out.push(cur.join(" "));cur=[];continue;}
+    let breakHere=false;
+    if(cur.length>=4&&i+1<tokens.length){
+      const next=tokens.slice(i+1,i+5).map(cleanW);
+      for(const m of SENT_MARKERS_MULTI){
+        const mw=m.split(" ").map(cleanW);
+        let ok=true;
+        for(let j=0;j<mw.length;j++){if(next[j]!==mw[j]){ok=false;break;}}
+        if(ok){breakHere=true;break;}
+      }
+      if(!breakHere&&SENT_MARKERS_SINGLE.has(next[0]))breakHere=true;
+    }
+    if(!breakHere&&pauseTokenMap.has(i+1)&&cur.length>=5){
+      const gap=pauseTokenMap.get(i+1);
+      const lastTok=tokens[i];
+      const endsPunct=/[,;:.!?]$/.test(lastTok);
+      if(endsPunct||gap>1200)breakHere=true;
+    }
+    if(breakHere){out.push(cur.join(" "));cur=[];}
+  }
+  if(cur.length)out.push(cur.join(" "));
+  return out;
+}
+
+function extractImportant(corpusSents, df, termRank, names){
+  const termSet=new Set();
+  const dates=new Set();
+  const lowerSet=new Set();
+  const properMid=new Map();
+  corpusSents.forEach(cs=>{
+    cs.toks.forEach(t=>{
+      const clean=t.replace(/[^а-яёА-ЯЁa-z0-9\-]/gi,"");
+      if(!clean) return;
+      const first=clean[0];
+      const low=clean.toLowerCase().replace(/ё/g,"е");
+      if(!/[А-ЯЁA-Z]/.test(first)) lowerSet.add(low);
+    });
+    const rawToks=cs.raw.split(/\s+/);
+    rawToks.forEach((tok,i)=>{
+      if(i===0) return;
+      const prev=rawToks[i-1]||"";
+      if(/[.!?…:;«»"]\s*$/.test(prev)) return;
+      const clean=tok.replace(/[^А-ЯЁа-яё\-]/g,"");
+      if(!/^[А-ЯЁ][а-яё\-]{2,}/.test(clean)) return;
+      const low=clean.toLowerCase().replace(/ё/g,"е");
+      properMid.set(low,(properMid.get(low)||0)+1);
+    });
+  });
+  corpusSents.forEach(cs=>{
+    (cs.raw.match(/\b\d{3,4}\b/g)||[]).forEach(d=>dates.add(d));
+    extractRomanCenturies(cs.raw).forEach(r=>dates.add(r));
+    let m;const qre=/«([^»]{2,60})»/g;
+    while((m=qre.exec(cs.raw))){tokenize(m[1]).filter(isContent).forEach(w=>termSet.add(lemma(w).l));}
+    const defs=cs.raw.match(/(?:это|называется|называют|представляет собой|является)\s+([а-яёА-ЯЁ\- ]{3,60})/g)||[];
+    defs.forEach(d=>{
+      const rest=d.replace(/^(?:это|называется|называют|представляет собой|является)\s+/i,"");
+      tokenize(rest).filter(isContent).slice(0,3).forEach(w=>termSet.add(lemma(w).l));
+    });
+  });
+  properMid.forEach((count,low)=>{
+    if(count<1) return;
+    if(lowerSet.has(low)) return;
+    if(STOP.has(low)||COMMON.has(low)||NOT_TERM.has(low)) return;
+    termSet.add(lemma(low).l);
+  });
+  termRank.slice(0,15).forEach(r=>termSet.add(r.t));
+  (names||[]).forEach(nm=>{tokenize(nm.name).filter(isContent).forEach(w=>termSet.add(lemma(w).l));});
+  return {termSet,dates};
+}
+function markImportant(raw,studentDates,importantTerms,stuLemmas){
+  let out="";let last=0;
+  const re=/(\b[IVXLCDM]{1,7}\b)|(\d{3,4})|([а-яёА-ЯЁa-z0-9][а-яёА-ЯЁa-z0-9\-]*)/g;
+  let m;
+  while((m=re.exec(raw))){
+    out+=esc(raw.slice(last,m.index));
+    const tok=m[0];
+    const isRoman=m[1]&&isRomanNumeral(m[1]);
+    if(/^\d{3,4}$/.test(tok)||isRoman){
+      const key=isRoman?tok.toUpperCase():tok;
+      const mentioned=studentDates&&(studentDates.has(key)||studentDates.has(tok));
+      out+=`<span class="imp d ${mentioned?"y":"n"}">${esc(tok)}</span>`;
+    }else{
+      const lem=lemma(tok).l;
+      if(importantTerms&&importantTerms.has(lem)){
+        const mentioned=stuLemmas&&stuLemmas.has(lem);
+        out+=`<span class="imp t ${mentioned?"y":"n"}">${esc(tok)}</span>`;
+      }else out+=esc(tok);
+    }
+    last=m.index+tok.length;
+  }
+  out+=esc(raw.slice(last));
+  return out;
+}
+
+function generateQuiz(corpusSents,importantTerms,names){
+  const quiz=[];const used=new Set();
+  for(const cs of corpusSents){
+    if(quiz.filter(x=>x.type==="century").length>=2)break;
+    if(used.has(cs.raw))continue;
+    const cs2=extractRomanCenturies(cs.raw);
+    if(!cs2.length)continue;
+    const c=cs2[0];
+    const q=cs.raw.replace(new RegExp("\\b"+c+"\\b"),"____");
+    if(q===cs.raw)continue;
+    quiz.push({type:"century",q,answer:c,ansType:"century"});
+    used.add(cs.raw);
+  }
+  for(const cs of corpusSents){
+    if(quiz.filter(x=>x.type==="date").length>=3)break;
+    if(used.has(cs.raw))continue;
+    const m=cs.raw.match(/\b(\d{3,4})\b/);
+    if(!m)continue;
+    const date=m[1];
+    const q=cs.raw.replace(date,"____");
+    if(q===cs.raw)continue;
+    quiz.push({type:"date",q,answer:date,ansType:"date"});
+    used.add(cs.raw);
+  }
+  for(const cs of corpusSents){
+    if(quiz.filter(x=>x.type==="term").length>=3)break;
+    if(used.has(cs.raw))continue;
+    let found=null;
+    for(const w of cs.toks){if(w.length>=4&&importantTerms.has(lemma(w).l)){found=w;break;}}
+    if(!found)continue;
+    const q=cs.raw.replace(found,"____");
+    if(q===cs.raw)continue;
+    quiz.push({type:"term",q,answer:found,ansType:"term"});
+    used.add(cs.raw);
+  }
+  for(const cs of corpusSents){
+    if(quiz.filter(x=>x.type==="person").length>=3)break;
+    if(used.has(cs.raw))continue;
+    let found=null,full=null;
+    for(const nm of names){
+      if(cs.raw.includes(nm.name)){full=nm.name;found=nm.name;break;}
+      const first=nm.name.split(" ")[0];
+      if(first&&cs.raw.includes(first)){found=first;full=nm.name;break;}
+    }
+    if(!found)continue;
+    const q=cs.raw.replace(found,"____");
+    if(q===cs.raw)continue;
+    quiz.push({type:"person",q,answer:full||found,ansType:"person"});
+    used.add(cs.raw);
+  }
+  return quiz.slice(0,8);
+}
+function checkQuizAnswer(q,val){
+  val=String(val||"").trim();
+  if(!val)return false;
+  if(q.ansType==="date"){const digits=val.replace(/\D/g,"");return digits===String(q.answer);}
+  if(q.ansType==="century"){return val.toUpperCase()===String(q.answer).toUpperCase();}
+  const vlem=lemma(val).l;
+  const alem=lemma(q.answer).l;
+  if(vlem===alem)return true;
+  if(vlem.length>=4&&(norm(val).includes(alem)||alem.includes(vlem)))return true;
+  return related(vlem,alem);
+}
+
+function extractFacts(corpusSents){
+  const dates=new Map();const names=[];
+  corpusSents.forEach(cs=>{
+    const dm=cs.raw.match(/\b\d{3,4}\b/g)||[];
+    dm.forEach(d=>{if(!dates.has(d))dates.set(d,new Set());cs.terms.forEach(t=>dates.get(d).add(t));});
+    extractRomanCenturies(cs.raw).forEach(c=>{
+      if(!dates.has(c))dates.set(c,new Set());
+      cs.terms.forEach(t=>dates.get(c).add(t));
+    });
+    const toks=cs.raw.trim().split(/\s+/);
+    for(let i=1;i<toks.length;i++){
+      const w=toks[i].replace(/[^А-ЯЁа-яё-]/g,"");
+      if(/^[А-ЯЁ][а-яё]{2,}/.test(w)){
+        let nm=w;
+        if(i+1<toks.length){const w2=toks[i+1].replace(/[^А-ЯЁа-яё-]/g,"");if(/^[А-ЯЁ][а-яё]{2,}/.test(w2)){nm+=" "+w2;i++;}}
+        names.push({name:nm,terms:new Set(cs.terms)});
+      }
+    }
+  });
+  const seen=new Set(),uniq=[];
+  names.forEach(x=>{const k=norm(x.name);if(!seen.has(k)){seen.add(k);uniq.push(x);}});
+  return {dates,names:uniq};
+}
+function checkFacts(chunks,facts){
+  const issues=[];
+  chunks.forEach((c,ci)=>{
+    const nums=[...(c.raw.match(/\b\d{3,4}\b/g)||[]),...extractRomanCenturies(c.raw)];
+    nums.forEach(d=>{
+      const ctx=facts.dates.get(d);
+      if(!ctx)return;
+      const near=[chunks[ci-1],c,chunks[ci+1]].filter(Boolean);
+      let ok=false;
+      for(const ch of near){
+        for(const t of ch.terms){
+          if(ctx.has(t)){ok=true;break;}
+          if(t.length>=5){for(const ct of ctx){if(related(t,ct)){ok=true;break;}}}
+          if(ok)break;
+        }
+        if(ok)break;
+      }
+      if(!ok)issues.push(d);
+    });
+  });
+  return [...new Set(issues)];
+}
+function detectContradictions(chunks,corpusSents,corpusNums,corpusCenturies){
+  const issues=[];
+  const studentNums=new Set();
+  chunks.forEach(c=>{(c.raw.match(/\b\d{3,4}\b/g)||[]).forEach(n=>studentNums.add(n));});
+  for(const sNum of studentNums){
+    if(corpusNums.has(sNum))continue;
+    for(const cNum of corpusNums){
+      if(sNum.length!==cNum.length)continue;
+      let diffs=0;
+      for(let i=0;i<sNum.length;i++)if(sNum[i]!==cNum[i])diffs++;
+      if(diffs===1){issues.push({type:"date",msg:`Возможно, перепутана дата: сказано «${sNum}», а в учебнике «${cNum}».`});break;}
+    }
+    if(issues.length>=3)break;
+  }
+  const studentCenturies=extractRomanCenturies(chunks.map(c=>c.raw).join(" "));
+  for(const sc of studentCenturies){
+    if(corpusCenturies.includes(sc))continue;
+    for(const cc of corpusCenturies){
+      if(Math.abs(romanToInt(sc)-romanToInt(cc))===1){
+        issues.push({type:"century",msg:`Возможно, перепутан век: сказано «${sc}», а в учебнике «${cc}».`});
+        break;
+      }
+    }
+    if(issues.length>=4)break;
+  }
+  const negVerbMap=new Map();
+  chunks.forEach(c=>{
+    for(let i=0;i<c.toks.length-1;i++){
+      const t=c.toks[i];
+      if(t==="не"||t==="ни"){
+        const nxt=c.toks[i+1];
+        if(nxt.length<4)continue;
+        const vs=porterRuStem(norm(nxt));
+        if(vs.length>=4)negVerbMap.set(vs,nxt);
+      }
+    }
+  });
+  negVerbMap.forEach((word,vs)=>{
+    if(issues.length>=5)return;
+    let found=false;
+    for(const cs of corpusSents){
+      for(let i=0;i<cs.toks.length;i++){
+        if(porterRuStem(norm(cs.toks[i]))===vs){
+          const prev=i>0?cs.toks[i-1]:"";
+          if(prev!=="не"&&prev!=="ни"){found=true;break;}
+        }
+      }
+      if(found)break;
+    }
+    if(found)issues.push({type:"negation",msg:`Обрати внимание: ты сказал «не ${word}», а в учебнике это утверждение без «не». Возможно, ты имел в виду противоположное.`});
+  });
+  return issues.slice(0,5);
+}
+
+function chainScore(chunks){
+  const PR=/^(он|она|они|оно|его|ее|её|их|ему|ей|им|это|этого|этому|эта|этот|эти|который|которая|которые|там|туда|тогда)$/;
+  let total=0,linked=0;
+  chunks.forEach((c,i)=>{
+    const hasPron=c.toks.some(t=>PR.test(norm(t)));
+    if(!hasPron||c.content.length<1)return;
+    total++;
+    let ok=false;
+    for(let j=Math.max(0,i-3);j<i;j++){const p=chunks[j];for(const t of c.terms){for(const pt of p.terms){if(related(t,pt)){ok=true;break;}}if(ok)break;}if(ok)break;}
+    if(ok)linked++;
+  });
+  return total===0?.8:clamp(linked/total,0,1);
+}
+function skeletonScore(low){
+  const hasDef=/это |называется|называют|представляет собой|является/.test(low)?1:0;
+  const hasCause=/потому что|из-за|благодаря|так как|по причине/.test(low)?1:0;
+  const hasSeq=/сначала|затем|после|потом|далее|во-первых/.test(low)?1:0;
+  const hasEx=/например|к примеру/.test(low)?1:0;
+  return clamp(.35*hasDef+.30*hasCause+.20*hasSeq+.15*hasEx,0,1);
+}
+
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function rubric(f){const q=.25*f[0]+.10*f[1]+.10*f[2]+.18*f[3]+.12*f[4]+.10*f[5]+.05*f[6]+.10*f[7];return clamp(2+3.15*Math.pow(clamp(q,0,1),.92),2,5);}
+class MLP{
+  constructor(l,rng){this.l=l;this.w=[];this.b=[];
+    for(let i=0;i<l.length-1;i++){const wi=[];for(let j=0;j<l[i+1];j++){const row=[];for(let k=0;k<l[i];k++){row.push((rng()*2-1)*Math.sqrt(2/l[i]));}wi.push(row);}this.w.push(wi);this.b.push(new Array(l[i+1]).fill(0));}}
+  fwd(x){this.a=[x];
+    for(let i=0;i<this.w.length;i++){const inp=this.a[i];const out=[];
+      for(let j=0;j<this.w[i].length;j++){let s=this.b[i][j];for(let k=0;k<inp.length;k++){s+=this.w[i][j][k]*inp[k];}out.push(i===this.w.length-1?s:Math.tanh(s));}
+      this.a.push(out);}
+    return this.a[this.a.length-1][0];}
+  train(X,Y,ep,lr){const L=this.w.length;
+    for(let e=0;e<ep;e++){for(let i=0;i<X.length;i++){
+      const y=this.fwd(X[i]);const deltas=new Array(L);deltas[L-1]=[2*(y-Y[i])];
+      for(let l=L-2;l>=0;l--){const d=[];for(let j=0;j<this.w[l].length;j++){let s=0;for(let k=0;k<deltas[l+1].length;k++){s+=this.w[l+1][k][j]*deltas[l+1][k];}d.push(s*(1-this.a[l+1][j]*this.a[l+1][j]));}deltas[l]=d;}
+      for(let l=0;l<L;l++){for(let j=0;j<this.w[l].length;j++){const dj=deltas[l][j];for(let k=0;k<this.w[l][j].length;k++){this.w[l][j][k]-=lr*dj*this.a[l][k];}this.b[l][j]-=lr*dj;}}}}}
+}
+const NET=(function(){
+  const rng=mulberry32(20260822);
+  const net=new MLP([8,12,8,1],rng);
+  const X=[],Y=[];
+  for(let i=0;i<900;i++){const f=[rng(),rng(),rng(),rng(),rng(),rng(),rng(),rng()];X.push(f);Y.push(clamp(rubric(f)+(rng()-0.5)*0.3,2,5));}
+  net.train(X,Y,80,0.015);net.train(X,Y,40,0.005);
+  return net;
+})();
+
+const TL={key:"pk5_teacher",load(){try{return JSON.parse(localStorage.getItem(this.key)||"[]")}catch(e){return[]}},save(a){try{localStorage.setItem(this.key,JSON.stringify(a))}catch(e){}}};
+function trainLinear(samples){
+  const d=9;
+  const XtX=Array.from({length:d},()=>new Array(d).fill(0));
+  const Xty=new Array(d).fill(0);
+  samples.forEach(s=>{const x=s.f.concat([1]);for(let i=0;i<d;i++){Xty[i]+=x[i]*s.g;for(let j=0;j<d;j++)XtX[i][j]+=x[i]*x[j];}});
+  for(let i=0;i<d;i++)XtX[i][i]+=2;
+  for(let i=0;i<d;i++){
+    let p=i;for(let r=i+1;r<d;r++)if(Math.abs(XtX[r][i])>Math.abs(XtX[p][i]))p=r;
+    const tr=XtX[i];XtX[i]=XtX[p];XtX[p]=tr;
+    const ty=Xty[i];Xty[i]=Xty[p];Xty[p]=ty;
+    if(Math.abs(XtX[i][i])<1e-9)continue;
+    for(let r=i+1;r<d;r++){const m=XtX[r][i]/XtX[i][i];for(let c2=i;c2<d;c2++)XtX[r][c2]-=m*XtX[i][c2];Xty[r]-=m*Xty[i];}
+  }
+  const w=new Array(d).fill(0);
+  for(let i=d-1;i>=0;i--){let s=Xty[i];for(let c2=i+1;c2<d;c2++)s-=XtX[i][c2]*w[c2];w[i]=Math.abs(XtX[i][i])>1e-9?s/XtX[i][i]:0;}
+  return w;
+}
+let TEACHER_W=null,TEACHER_N=0;
+function refreshTeacher(){const samples=TL.load();TEACHER_N=samples.length;TEACHER_W=TEACHER_N>=4?trainLinear(samples):null;}
+function predictTeacher(f){if(!TEACHER_W)return null;const x=f.concat([1]);let s=0;for(let i=0;i<9;i++)s+=TEACHER_W[i]*x[i];return clamp(s,2,5);}
+refreshTeacher();
+let LAST_F=null;
+
+function adaptiveMultiplier(){
+  if(!Auth.user)return 1.0;
+  const acc=Auth.current();
+  if(!acc)return 1.0;
+  const res=acc.results||[];
+  if(res.length<5)return 1.0;
+  const avg=res.reduce((a,r)=>a+r.grade,0)/res.length;
+  const m=1.0-(avg-3.5)*0.04;
+  return clamp(m,0.92,1.08);
+}
+
+/* ====================================================================
+   ЭКСПОРТ / ИМПОРТ
+   ==================================================================== */
+function downloadBlob(blob, filename){
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download=filename;
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},100);
+}
+function generateReportHtml(acc, userName){
+  const stats=computeStats(acc.results||[]);
+  const lv=levelFor(stats.total);
+  const results=(acc.results||[]).slice().sort((a,b)=>a.ts-b.ts);
+  const achievements=acc.achievements||[];
+  const bySubject={};
+  results.forEach(r=>{(bySubject[r.subject]=bySubject[r.subject]||[]).push(r);});
+  let chartHtml="";
+  Object.keys(bySubject).forEach(s=>{
+    const arr=bySubject[s];
+    const maxH=120;
+    const barW=Math.max(30,Math.floor(600/Math.max(1,arr.length)));
+    const width=Math.max(600,arr.length*barW+60);
+    let bars="";
+    arr.forEach((r,i)=>{
+      const h=Math.max(15,(r.grade/5)*maxH);
+      const x=30+i*barW;
+      const y=maxH+30-h;
+      const color=r.grade>=4.5?"#2c8a52":r.grade>=3.5?"#3a67c9":r.grade>=2.5?"#d99a2b":"#cf3527";
+      bars+=`<rect x="${x}" y="${y}" width="${Math.max(8,barW-6)}" height="${h}" fill="${color}" rx="3"/>`;
+      bars+=`<text x="${x+Math.max(8,barW-6)/2}" y="${y-5}" text-anchor="middle" font-size="11" fill="#22314f">${r.grade}</text>`;
+    });
+    chartHtml+=`<h3>${esc(s)}</h3><svg width="100%" viewBox="0 0 ${width} ${maxH+60}" style="max-width:${width}px;display:block;margin:10px 0"><line x1="20" y1="${maxH+30}" x2="${width-10}" y2="${maxH+30}" stroke="#ccc"/>${bars}</svg>`;
+  });
+  let tableHtml="";
+  Object.keys(bySubject).forEach(s=>{
+    tableHtml+=`<h3>${esc(s)}</h3><table><tr><th>Дата</th><th>Тема</th><th>Оценка</th><th>Полнота</th><th>Слов</th></tr>`;
+    bySubject[s].forEach(r=>{
+      tableHtml+=`<tr><td>${new Date(r.ts).toLocaleDateString("ru-RU")}</td><td>${esc(r.topic)}</td><td>${r.grade}</td><td>${r.coverage}%</td><td>${r.words}</td></tr>`;
+    });
+    tableHtml+=`</table>`;
+  });
+  let achHtml="";
+  ACHIEVEMENTS.forEach(a=>{
+    const un=achievements.includes(a.id);
+    achHtml+=`<div class="ach ${un?'':'lk'}"><span style="font-size:20px">${un?a.icon:'🔒'}</span><div><b>${a.title}</b><br><span>${a.desc}</span></div></div>`;
+  });
+  return `<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Отчёт — ${esc(userName)}</title>
+<style>body{font-family:Rubik,system-ui,sans-serif;max-width:900px;margin:0 auto;padding:30px 20px;background:#fbfcf6;color:#22314f;line-height:1.5}
+h1{font-size:32px;margin-bottom:5px}h2{font-size:20px;margin:24px 0 8px;border-bottom:2px solid #e3e0d2;padding-bottom:6px}h3{font-size:16px;margin:16px 0 6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:16px 0}
+.cell{background:#fff;border:1px solid #e3e0d2;border-radius:8px;padding:12px;text-align:center}.cell b{display:block;font-size:22px;margin-bottom:4px}.cell span{font-size:12px;color:#5a6883}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}th,td{padding:6px 8px;border-bottom:1px solid #eee;text-align:left}th{background:#f6f7f1;font-size:12px;color:#5a6883}
+.ach{display:flex;gap:8px;align-items:flex-start;padding:8px;border-radius:6px;background:#f6f7f1;margin-bottom:6px;font-size:13px}.ach.lk{opacity:.5}.ach span{font-size:11px;color:#5a6883}
+.lvl{background:linear-gradient(180deg,#fdf6d8,#f9ecb4);border:1px solid #e6d793;border-radius:6px;padding:4px 12px;font-weight:700;font-size:14px;display:inline-block;margin-bottom:6px}
+footer{margin-top:30px;padding-top:16px;border-top:1px solid #e3e0d2;font-size:12px;color:#5a6883;text-align:center}</style></head>
+<body><h1>Отчёт об успеваемости</h1>
+<p style="color:#5a6883">Ученик: <b>${esc(userName)}</b> · Экспортирован: ${new Date().toLocaleString("ru-RU")}</p>
+<span class="lvl">${lv.name} · ${stats.total} проверок</span>
+<div class="grid">
+<div class="cell"><b>${stats.total}</b><span>проверок</span></div>
+<div class="cell"><b>${stats.fives}</b><span>пятёрок</span></div>
+<div class="cell"><b>${stats.subjects}</b><span>предметов</span></div>
+<div class="cell"><b>${stats.maxCoverage}%</b><span>макс. полнота</span></div>
+<div class="cell"><b>${stats.streak}</b><span>серия (дней)</span></div>
+<div class="cell"><b>${stats.longest}</b><span>рекорд серии</span></div>
+<div class="cell"><b>${achievements.length}/${ACHIEVEMENTS.length}</b><span>достижений</span></div>
+</div>
+<h2>Достижения</h2>${achHtml}
+<h2>Диаграммы по предметам</h2>${chartHtml||'<p>Нет данных</p>'}
+<h2>История проверок</h2>${tableHtml||'<p>Нет данных</p>'}
+<footer>Устно на 5+ · экспорт аккаунта · ${new Date().toISOString()}</footer>
+</body></html>`;
+}
+function exportHtml(){
+  if(!Auth.user){openAuth();return;}
+  const acc=Auth.current();
+  if(!acc){toast("Не удалось загрузить аккаунт");return;}
+  try{
+    const html=generateReportHtml(acc,Auth.user);
+    const blob=new Blob([html],{type:"text/html;charset=utf-8"});
+    const date=new Date().toISOString().slice(0,10);
+    const safeName=Auth.user.replace(/[^\wа-яё\-]/gi,"_").slice(0,40);
+    downloadBlob(blob,`pereskaz-otchet-${safeName}-${date}.html`);
+    toast("HTML-отчёт скачан");
+  }catch(e){alert("Ошибка экспорта: "+e.message);}
+}
+function exportJson(){
+  if(!Auth.user){openAuth();return;}
+  const acc=Auth.current();
+  if(!acc){toast("Не удалось загрузить аккаунт");return;}
+  const data={version:25,exportedAt:new Date().toISOString(),user:Auth.user,account:{pass:acc.pass,created:acc.created,topics:acc.topics||[],results:acc.results||[],achievements:acc.achievements||[]}};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json;charset=utf-8"});
+  const date=new Date().toISOString().slice(0,10);
+  const safeName=Auth.user.replace(/[^\wа-яё\-]/gi,"_").slice(0,40);
+  downloadBlob(blob,`pereskaz-backup-${safeName}-${date}.json`);
+  toast("JSON-бэкап скачан");
+}
+function importJsonFile(file){
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const data=JSON.parse(reader.result);
+      if(!data.user||!data.account) throw new Error("Неверный формат файла");
+      const all=Auth.load();
+      if(all[data.user]){if(!confirm(`Аккаунт "${data.user}" уже существует. Перезаписать данные?`))return;}
+      all[data.user]=data.account;
+      Auth.save(all);
+      toast(`Аккаунт "${data.user}" восстановлен из файла`);
+      if(Auth.user===data.user){myTopics=data.account.topics||[];renderLibrary();renderAuthUI();}
+    }catch(e){alert("Ошибка импорта: "+e.message);}
+  };
+  reader.readAsText(file);
+}
+function checkStorage(){
+  const hint=document.getElementById("exportHint");
+  if(!hint)return;
+  if(!Auth.user){hint.textContent="";return;}
+  try{
+    let totalSize=0;
+    for(let k in localStorage){if(Object.prototype.hasOwnProperty.call(localStorage,k))totalSize+=(localStorage[k]||"").length;}
+    const pct=Math.round(totalSize/(5*1024*1024)*100);
+    if(pct>80)hint.innerHTML=`⚠️ Хранилище заполнено на ${pct}%. Рекомендуется сделать экспорт и удалить старые записи.`;
+    else if(pct>50)hint.innerHTML=`Хранилище заполнено на ${pct}%. При желании можно сделать резервную копию.`;
+    else hint.textContent="";
+  }catch(e){}
+}
+
+const $=id=>document.getElementById(id);
+const tx=$("tx"),micBtn=$("micBtn"),micStatus=$("micStatus");
+$("dateChip").textContent=new Date().toLocaleDateString("ru-RU",{day:"numeric",month:"long",year:"numeric"});
+function toast(msg){
+  let wrap=$("toasts");if(!wrap){wrap=document.createElement("div");wrap.id="toasts";document.body.appendChild(wrap);}
+  const t=document.createElement("div");t.className="toast";
+  t.innerHTML='<span class="toast-mk">✓</span>'+msg;wrap.appendChild(t);
+  requestAnimationFrame(()=>t.classList.add("show"));
+  setTimeout(()=>{t.classList.remove("show");setTimeout(()=>t.remove(),400);},3400);
+}
+function openAuth(){$("authMsg").textContent="";$("authPass").value="";$("authBox").classList.remove("hidden");setTimeout(()=>$("authName").focus(),50);}
+function closeAuth(){$("authBox").classList.add("hidden");}
+$("authClose").onclick=closeAuth;$("authCancel").onclick=closeAuth;
+$("authBox").addEventListener("click",e=>{if(e.target.id==="authBox")closeAuth();});
+$("gwLogin").onclick=openAuth;
+$("authGo").onclick=async()=>{
+  const name=$("authName").value.trim(),pass=$("authPass").value,msg=$("authMsg");
+  if(name.length<2){msg.textContent="Имя должно быть не короче 2 символов.";return;}
+  if(pass.length<4){msg.textContent="Пароль должен быть не короче 4 символов.";return;}
+  const h=await Auth.hash(pass);
+  const acc=Auth.load();
+  if(acc[name]){if(acc[name].pass!==h){msg.textContent="Неверный пароль для этого имени.";return;}}
+  else{acc[name]={pass:h,created:Date.now(),topics:store.load().slice(),results:[],achievements:[]};}
+  try{Auth.save(acc);}catch(e){return;}
+  localStorage.setItem(Auth.SK,JSON.stringify({user:name}));
+  Auth.user=name;
+  myTopics=acc[name].topics||[];
+  renderLibrary();renderAuthUI();closeAuth();
+  toast(`Добро пожаловать, ${name}! Прогресс будет сохраняться в этом браузере.`);
+};
+function logout(){localStorage.removeItem(Auth.SK);Auth.user=null;myTopics=store.load();renderLibrary();renderAuthUI();toast("Вы вышли из аккаунта. Сайт продолжает работать без входа.");}
+function renderAuthUI(){
+  const chip=$("authChip"),ban=$("guestBanner");
+  if(Auth.user){chip.textContent="👤 "+Auth.user+" · Выйти";ban.classList.add("hidden");}
+  else{chip.textContent="👤 Войти в аккаунт";ban.classList.remove("hidden");}
+  const eh=$("exportHtml"),ej=$("exportJson");
+  if(eh)eh.disabled=!Auth.user;
+  if(ej)ej.disabled=!Auth.user;
+  renderProgressCard();renderAchCard();checkStorage();
+}
+$("authChip").onclick=()=>{if(Auth.user)logout();else openAuth();};
+$("authChip").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();if(Auth.user)logout();else openAuth();}});
+function renderProgressCard(){
+  const card=$("progressCard");
+  if(!Auth.user){
+    card.innerHTML=`<h3>📊 Мой прогресс</h3><p class="hint">Войди в аккаунт, чтобы сохранять результаты и видеть статистику по предметам и темам.</p><div style="margin-top:10px"><button class="btn green" id="pcLogin" style="width:100%">Войти / создать аккаунт</button></div>`;
+    $("pcLogin").onclick=openAuth;return;
+  }
+  const a=Auth.current()||{};const res=a.results||[];
+  if(!res.length){
+    card.innerHTML=`<h3>📊 Мой прогресс</h3><p class="hint">Пока нет проверенных пересказов. Проверь первый — статистика появится здесь.</p><div style="margin-top:10px"><button class="btn ghost" id="pcStats" style="width:100%">Открыть статистику</button></div>`;
+    $("pcStats").onclick=openStats;return;
+  }
+  const avg=res.reduce((s,x)=>s+x.grade,0)/res.length;
+  const subjects=[...new Set(res.map(x=>x.subject))];
+  const last=res[res.length-1];
+  card.innerHTML=`<h3>📊 Мой прогресс</h3>
+    <div class="pc-grid">
+      <div class="pc-cell"><b>${res.length}</b><span>проверок</span></div>
+      <div class="pc-cell"><b>${avg.toFixed(1)}</b><span>средняя</span></div>
+      <div class="pc-cell"><b>${subjects.length}</b><span>предметов</span></div>
+      <div class="pc-cell"><b>${last.grade}</b><span>последняя</span></div>
+    </div>
+    <div style="margin-top:10px"><button class="btn ghost" id="pcStats" style="width:100%">Открыть статистику</button></div>`;
+  $("pcStats").onclick=openStats;
+}
+function renderAchCard(){
+  const card=$("achCard");
+  if(!Auth.user){
+    card.innerHTML=`<h3>🏆 Достижения</h3><p class="hint">Войди в аккаунт, чтобы открывать достижения и уровни.</p><div style="margin-top:10px"><button class="btn green" id="achLogin" style="width:100%">Войти / создать аккаунт</button></div>`;
+    $("achLogin").onclick=openAuth;return;
+  }
+  const acc=Auth.current()||{};
+  const results=acc.results||[];
+  const stats=computeStats(results);
+  const lv=levelFor(stats.total);
+  const unlocked=(acc.achievements||[]).length;
+  const pct=lv.next?Math.min(100,Math.round((stats.total-lv.min)/(lv.next.min-lv.min)*100)):100;
+  card.innerHTML=`<h3>🏆 Достижения</h3>
+    <div class="lvl-row"><span class="lvl-badge">${lv.name}</span><span class="hint">уровень · ${stats.total} проверок</span></div>
+    <div class="lvl-bar"><i style="width:${pct}%"></i></div>
+    <p class="hint" style="margin-top:6px">${lv.next?`До уровня «${lv.next.name}»: ещё ${Math.max(0,lv.next.min-stats.total)} проверок`:"Максимальный уровень!"}</p>
+    <div class="pc-grid" style="margin-top:10px">
+      <div class="pc-cell"><b>${unlocked}/${ACHIEVEMENTS.length}</b><span>ачивок</span></div>
+      <div class="pc-cell"><b>${stats.streak}</b><span>серия дней</span></div>
+      <div class="pc-cell"><b>${stats.longest}</b><span>рекорд серии</span></div>
+      <div class="pc-cell"><b>${stats.fives}</b><span>пятёрок</span></div>
+    </div>
+    <div style="margin-top:10px"><button class="btn ghost" id="achOpen" style="width:100%">Все достижения</button></div>`;
+  $("achOpen").onclick=openAch;
+}
+function openAch(){
+  if(!Auth.user){openAuth();return;}
+  const acc=Auth.current()||{};
+  const results=acc.results||[];
+  const stats=computeStats(results);
+  const unlockedSet=new Set(acc.achievements||[]);
+  const lv=levelFor(stats.total);
+  let html=`<p class="hint">Уровень: <b>${lv.name}</b> · ${stats.total} проверок · серия ${stats.streak} дн. (рекорд ${stats.longest})</p>`;
+  html+='<div class="ach-grid">';
+  ACHIEVEMENTS.forEach(a=>{const un=unlockedSet.has(a.id);html+=`<div class="ach ${un?"un":"lk"}"><div class="ach-ic">${un?a.icon:"🔒"}</div><div class="ach-tx"><b>${a.title}</b><span>${a.desc}</span></div></div>`;});
+  html+='</div>';
+  $("achTitle").textContent="Достижения — "+Auth.user;
+  $("achBody").innerHTML=html;
+  $("achBox").classList.remove("hidden");
+}
+$("achClose").onclick=()=>$("achBox").classList.add("hidden");
+$("achBox").addEventListener("click",e=>{if(e.target.id==="achBox")$("achBox").classList.add("hidden");});
+function openStats(){
+  if(!Auth.user){openAuth();return;}
+  const a=Auth.current()||{};const res=a.results||[];
+  $("statsTitle").textContent="Статистика — "+Auth.user;
+  const body=$("statsBody");
+  if(!res.length){body.innerHTML='<p class="hint">Пока нет проверенных пересказов.</p>';$("statsBox").classList.remove("hidden");return;}
+  const gradeColor=g=>g>=4.5?"var(--green)":g>=3.5?"var(--blue)":g>=2.5?"#d99a2b":"var(--red)";
+  const bySub={};
+  res.forEach(x=>{(bySub[x.subject]=bySub[x.subject]||[]).push(x);});
+  function barsFor(arr){
+    let h='<div class="chart-row">';
+    arr.forEach(x=>{
+      const d=new Date(x.ts);
+      const dateStr=d.toLocaleDateString("ru-RU",{day:"2-digit",month:"2-digit",year:"2-digit"});
+      const full=d.toLocaleDateString("ru-RU")+" · "+x.topic+" · оценка "+x.grade;
+      h+=`<div class="cbar" title="${esc(full)}"><span class="v">${x.grade}</span><div class="b" style="height:${Math.max(12,(x.grade/5)*120)}px;background:${gradeColor(x.grade)}"></div><span class="n">${dateStr}</span></div>`;
+    });
+    h+='</div>';return h;
+  }
+  let html='<p class="hint">Отдельная диаграмма для каждого предмета. Прокрути вбок, если записей много.</p>';
+  Object.keys(bySub).forEach(s=>{
+    const arr=bySub[s];
+    const avg=(arr.reduce((t,x)=>t+x.grade,0)/arr.length).toFixed(1);
+    const byTopic={};
+    arr.forEach(x=>{(byTopic[x.topic]=byTopic[x.topic]||[]).push(x);});
+    let rows='';
+    Object.keys(byTopic).forEach(t=>{
+      const ta=byTopic[t];const last=ta[ta.length-1];const best=Math.max(...ta.map(x=>x.grade));
+      rows+=`<tr><td>${esc(t)}</td><td>${ta.length}</td><td><span class="gdot" style="background:${gradeColor(last.grade)}">${last.grade}</span></td><td><b>${best}</b></td><td>${new Date(last.ts).toLocaleDateString("ru-RU")}</td></tr>`;
+    });
+    html+=`<h3 style="margin-top:20px">${esc(s)} <span class="hint" style="font-weight:400">· проверок: ${arr.length} · средняя: <b>${avg}</b></span></h3>`;
+    html+=barsFor(arr);
+    html+=`<div class="stats-tbl-wrap"><table class="stats-tbl"><tr><th>Тема</th><th>Попыток</th><th>Последняя</th><th>Лучшая</th><th>Дата</th></tr>${rows}</table></div>`;
+  });
+  body.innerHTML=html;
+  $("statsBox").classList.remove("hidden");
+}
+$("statsClose").onclick=()=>$("statsBox").classList.add("hidden");
+$("statsBox").addEventListener("click",e=>{if(e.target.id==="statsBox")$("statsBox").classList.add("hidden");});
+
+$("exportHtml").onclick=exportHtml;
+$("exportJson").onclick=exportJson;
+$("importJson").onchange=e=>{const f=e.target.files[0];if(f)importJsonFile(f);e.target.value="";};
+
+function flashSelected(){const s=$("topicList").querySelector(".sel");if(s){s.classList.remove("flash");void s.offsetWidth;s.classList.add("flash");}}
+function updateOkLine(){
+  const el=$("topicOk");
+  if(!state.topic){el.classList.add("hidden");return;}
+  el.classList.remove("hidden");
+  const subj=state.subjectName?` · ${state.subjectName}`:"";
+  el.innerHTML=`✓ Тема «${state.topic.t}»${subj} принята <em>учебник прикрепи в шаге 2</em>`;
+  el.classList.remove("pop");void el.offsetWidth;el.classList.add("pop");
+}
+if("IntersectionObserver" in window){
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}}),{threshold:.12});
+  document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+  const stepIO=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){
+    document.querySelectorAll(".step").forEach(s=>s.classList.toggle("active",s.getAttribute("href")==="#"+e.target.id));}});},{rootMargin:"-30% 0px -55% 0px"});
+  ["s1","s2","s3","results"].forEach(id=>stepIO.observe($(id)));
+}else{document.querySelectorAll(".reveal").forEach(el=>el.classList.add("in"));}
+setTimeout(()=>document.querySelectorAll(".reveal:not(.in)").forEach(el=>el.classList.add("in")),2500);
+
+function renderLibrary(){
+  const box=$("topicList");
+  if(!myTopics.length){box.innerHTML='<p class="hint">Библиотека тем пока пуста.</p>';return;}
+  box.innerHTML='<p style="margin:4px 0 6px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)">🔖 Библиотека тем</p>'+
+  myTopics.map(m=>{
+    const sel=state.topic&&state.topic.t===m.t;
+    return `<div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
+      <button class="topic-btn${sel?" sel":""}" data-mid="${m.id}" style="flex:1;margin-bottom:0"><span>${m.t}</span><small>${m.subj||""}</small></button>
+      <button class="icon-btn" data-mdel="${m.id}" title="Удалить из библиотеки" aria-label="Удалить">✕</button></div>`;
+  }).join("");
+  box.querySelectorAll("[data-mid]").forEach(b=>b.onclick=()=>{
+    const m=myTopics.find(x=>x.id==b.dataset.mid);if(!m)return;
+    state.topic={t:m.t,k:[],s:""};state.customTitle=m.t;state.subjectName=m.subj||"";
+    $("topicSubject").value=m.subj||"";$("topicTitle").value=m.t;
+    renderLibrary();flashSelected();updateOkLine();
+    toast(`Тема «${m.t}» выбрана`);updateReady();
+  });
+  box.querySelectorAll("[data-mdel]").forEach(b=>b.onclick=()=>{
+    myTopics=myTopics.filter(x=>x.id!=b.dataset.mdel);saveTopics(myTopics);renderLibrary();
+  });
+}
+$("topicUse").onclick=()=>{
+  const title=$("topicTitle").value.trim();
+  const subj=$("topicSubject").value.trim();
+  if(!subj){alert("Укажи школьный предмет.");$("topicSubject").focus();return;}
+  if(!title){alert("Укажи название темы.");$("topicTitle").focus();return;}
+  state.customTitle=title;state.subjectName=subj;
+  state.topic={t:title,k:[],s:""};
+  const arr=myTopics;
+  if(!arr.some(m=>norm(m.t)===norm(title)&&norm(m.subj||"")===norm(subj)))arr.push({id:Date.now(),t:title,subj});
+  saveTopics(arr);
+  renderLibrary();flashSelected();updateOkLine();updateReady();
+  toast(`Тема «${title}» (${subj}) принята. Теперь приложи учебник в шаге 2.`);
+  $("s2").scrollIntoView({behavior:"smooth"});
+};
+function renderSources(){
+  const list=$("srcList");
+  const rows=[];
+  state.sources.forEach((s,i)=>rows.push({s,i}));
+  let html=rows.map(r=>{
+    const s=r.s;
+    const thumb=s.img?`<img class="src-thumb" data-view="${r.i}" src="${s.img}" alt="Миниатюра скана" title="Открыть и посмотреть, что прочитала нейросеть">`:`<span class="tag">📄</span>`;
+    const ord=(s.img&&s.orderLabel&&!s.pending)?`<span class="badge-ord">№${s.orderLabel}</span>`:"";
+    const parts=(s.sections&&s.sections.length>1)?`<span class="badge-part">частей: ${s.sections.length}</span>`:"";
+    const right=s.pending
+      ?`<span class="spin"></span><span class="wc">нейросеть читает…</span>`
+      :`<span class="wc">${wc(s.text)} сл.</span><span class="badge-ok">изучено ✓</span>${parts}${ord}<button class="icon-btn" data-del="${r.i}" title="Удалить" aria-label="Удалить">✕</button>`;
+    return `<div class="src-row">${thumb}<span class="nm">${s.name}</span>${right}</div>`;
+  }).join("");
+  if(!rows.length)html='<p class="hint">Источники появятся здесь.</p>';
+  list.innerHTML=html;
+  list.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{
+    state.sources.splice(+b.dataset.del,1);
+    let n=0;state.sources.forEach(s=>{if(s.img&&!s.pending)s.orderLabel=++n;});
+    invalidateDict();renderSources();updateReady();
+  });
+  list.querySelectorAll("[data-view]").forEach(im=>im.onclick=()=>openView(+im.dataset.view));
+}
+function openView(i){
+  const s=state.sources[i];if(!s||!s.img)return;
+  $("lbName").textContent=(s.orderLabel?("Страница №"+s.orderLabel+" — "):"")+s.name;
+  $("lbImg").src=s.img;
+  $("lbText").textContent=s.pending?"Ещё распознаём…":(s.text||"(текст не распознан)");
+  $("lightbox").classList.remove("hidden");
+}
+function closeView(){$("lightbox").classList.add("hidden");}
+$("lbClose").onclick=closeView;
+$("lightbox").addEventListener("click",e=>{if(e.target.id==="lightbox")closeView();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeView();$("authBox").classList.add("hidden");$("achBox").classList.add("hidden");$("statsBox").classList.add("hidden");}});
+function pageNumber(text){
+  const t=(text||"").replace(/\s+/g," ").trim();
+  let m=t.match(/стр(?:аниц[аы]?)?\.?\s*([0-9]{1,4})/i);
+  if(m)return +m[1];
+  m=t.match(/^([0-9]{1,4})(?=\s|$)/)||t.match(/(^|\s)([0-9]{1,4})$/);
+  if(m&&+m[m.length-1]>=1&&+m[m.length-1]<500)return +m[m.length-1];
+  return null;
+}
+function continuity(a,b){
+  const aw=tokenize(a).slice(-12).map(stem);
+  const bw=tokenize(b).slice(0,12).map(stem);
+  const set=new Set(bw);let ov=0;
+  aw.forEach(w=>{if(set.has(w))ov++;});
+  let bonus=0;
+  const ta=(a||"").trim();
+  if(ta&&!/[.!?…]$/.test(ta)&&/^[a-zа-я]/i.test((b||"").trim()))bonus=.6;
+  return ov+bonus;
+}
+function sortScanSources(){
+  const scans=state.sources.filter(s=>s.img&&!s.pending);
+  if(scans.length<2)return;
+  const nums=scans.map(s=>pageNumber(s.text));
+  const haveNums=nums.filter(n=>n!=null).length;
+  let ordered;
+  if(haveNums>=Math.ceil(scans.length/2)){
+    ordered=[...scans].sort((a,b)=>(pageNumber(a.text)==null?1e9:pageNumber(a.text))-(pageNumber(b.text)==null?1e9:pageNumber(b.text)));
+  }else{
+    ordered=[scans[0]];const rest=scans.slice(1);
+    while(rest.length){
+      const last=ordered[ordered.length-1];
+      let bi=0,bv=-1;
+      rest.forEach((c,i)=>{const v=continuity(last.text||"",c.text||"");if(v>bv){bv=v;bi=i;}});
+      ordered.push(rest.splice(bi,1)[0]);
+    }
+  }
+  const changed=ordered.some((s,i)=>scans[i]!==s);
+  ordered.forEach((s,i)=>{s.orderLabel=i+1;});
+  const others=state.sources.filter(s=>scans.indexOf(s)===-1);
+  state.sources=[...ordered,...others];
+  renderSources();updateReady();
+  if(changed)toast(`Страницы были прикреплены вразнобой — нейросеть расставила их по порядку (${scans.length} шт.)`);
+}
+let tessPromise=null;
+function loadTesseract(){
+  if(window.Tesseract)return Promise.resolve();
+  if(!tessPromise){
+    tessPromise=new Promise((res,rej)=>{
+      const urls=["https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js","https://unpkg.com/tesseract.js@5.1.1/dist/tesseract.min.js"];
+      (function next(i){
+        if(i>=urls.length)return rej(new Error("CDN недоступен"));
+        const s=document.createElement("script");s.src=urls[i];
+        s.onload=()=>window.Tesseract?res():next(i+1);
+        s.onerror=()=>next(i+1);
+        document.head.appendChild(s);
+      })(0);
+    });
+  }
+  return tessPromise;
+}
+/* Сжатие изображения перед OCR — важно для мобильных */
+async function compressImage(file,maxSide=1600,quality=0.82){
+  try{
+    if(!window.createImageBitmap)return file;
+    const bmp=await createImageBitmap(file);
+    const scale=Math.min(1,maxSide/Math.max(bmp.width,bmp.height));
+    const w=Math.round(bmp.width*scale),h=Math.round(bmp.height*scale);
+    const canvas=document.createElement("canvas");canvas.width=w;canvas.height=h;
+    const ctx=canvas.getContext("2d");ctx.drawImage(bmp,0,0,w,h);
+    const blob=await new Promise(res=>canvas.toBlob(res,"image/jpeg",quality));
+    if(!blob)return file;
+    return new File([blob],file.name.replace(/\.[^.]+$/,"")+".jpg",{type:"image/jpeg"});
+  }catch(e){return file;}
+}
+async function ocrFiles(files){
+  if(!files||!files.length)return;
+  const box=$("ocrBox"),fill=$("ocrFill"),msg=$("ocrMsg");box.style.display="block";
+  fill.style.width="0";msg.textContent="Загружаем модуль распознавания…";
+  try{await loadTesseract();}catch(e){box.style.display="none";alert("Не удалось загрузить модуль распознавания (нет доступа к CDN). Вставь текст источника вручную.");return;}
+  let worker;try{worker=await Tesseract.createWorker("rus",1,{logger:m=>{
+    if(m.status==="recognizing text"){fill.style.width=Math.round(m.progress*100)+"%";msg.textContent="Нейросеть читает страницу… "+Math.round(m.progress*100)+"%";}}});
+    for(const f of files){
+      msg.textContent="Готовим «"+f.name+"»…";fill.style.width="0";
+      const prepared=await compressImage(f);
+      const entry={name:f.name,img:URL.createObjectURL(prepared),text:"",pending:true};
+      state.sources.push(entry);renderSources();
+      msg.textContent="Нейросеть читает «"+f.name+"»…";fill.style.width="0";
+      const {data}=await worker.recognize(prepared,{},{blocks:true,text:true});
+      const t=cleanOcrText(data).trim();
+      entry.pending=false;
+      if(wc(t)<5){state.sources=state.sources.filter(x=>x!==entry);alert("«"+f.name+"»: не удалось распознать текст (возможно, на странице в основном иллюстрации).");}
+      else{
+        entry.text=t;
+        const doc=readDocument(t);
+        entry.sections=doc.sections;
+        const heads=entry.sections.filter(x=>x.heading).length;
+        invalidateDict();
+        toast(`Читатель: «${f.name}» — ${wc(t)} слов${heads?`, заголовков: ${heads}`:""}, частей: ${entry.sections.length}`);
+      }
+      renderSources();
+    }
+    sortScanSources();
+    await worker.terminate();
+  }catch(e){alert("Ошибка распознавания: "+e.message);}
+  box.style.display="none";
+}
+$("files").onchange=e=>{ocrFiles([...e.target.files]);e.target.value="";};
+$("cameraInput").onchange=e=>{ocrFiles([...e.target.files]);e.target.value="";};
+$("cameraBtn").onclick=()=>$("cameraInput").click();
+const drop=$("drop");
+["dragover","dragenter"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over");}));
+["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over");}));
+drop.addEventListener("drop",e=>ocrFiles([...e.dataTransfer.files].filter(f=>f.type.startsWith("image"))));
+$("pasteToggle").onclick=()=>$("pasteArea").classList.toggle("hidden");
+$("pasteCancel").onclick=()=>$("pasteArea").classList.add("hidden");
+$("pasteSave").onclick=()=>{
+  const t=$("pasteText").value.trim();if(wc(t)<10){alert("Слишком короткий текст источника.");return;}
+  const doc=readDocument(t);
+  state.sources.push({name:"Текст источника "+(state.sources.length+1),text:t,sections:doc.sections});
+  $("pasteText").value="";$("pasteArea").classList.add("hidden");invalidateDict();renderSources();
+  toast(`Источник добавлен: ${wc(t)} слов, частей: ${doc.sections.length}`);updateReady();
+};
+
+/* ====================================================================
+   ГОЛОСОВОЙ ВВОД — мобильная версия
+   ==================================================================== */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const IS_IOS=/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const IS_ANDROID=/Android/i.test(navigator.userAgent);
+let rec=null,listening=false,starting=false;
+let finalText="",interim="",timerInt=null,seconds=0;
+let audioCtx=null,analyser=null,mediaStream=null,rafId=null;
+let restartTimer=null;
+let lastRendered="";
+let userEdited=false;
+
+function fmtT(s){return Math.floor(s/60)+":"+String(s%60).padStart(2,"0");}
+function updWC(){$("wc").textContent=wc(tx.value);updateReady();}
+tx.addEventListener("input",()=>{
+  if(tx.value!==lastRendered) userEdited=true;
+  updWC();
+});
+
+function drawWave(){
+  const c=$("wave"),ctx=c.getContext("2d"),buf=new Uint8Array(analyser.fftSize);
+  (function loop(){
+    rafId=requestAnimationFrame(loop);analyser.getByteTimeDomainData(buf);
+    ctx.clearRect(0,0,c.width,c.height);ctx.strokeStyle="#cf3527";ctx.lineWidth=2;ctx.beginPath();
+    const step=c.width/buf.length;
+    for(let i=0;i<buf.length;i++){const y=c.height/2+((buf[i]-128)/128)*(c.height/2-3);i?ctx.lineTo(i*step,y):ctx.moveTo(0,y);}
+    ctx.stroke();
+  })();
+}
+function showVoiceWarn(msg){const w=$("voiceWarn");w.style.display="block";w.textContent=msg;}
+function clearVoiceWarn(){const w=$("voiceWarn");w.style.display="none";w.textContent="";}
+
+function renderTx(){
+  const merged=(finalText+" "+interim).replace(/\s+/g," ").trim();
+  lastRendered=merged;
+  tx.value=merged;
+  userEdited=false;
+  updWC();
+}
+
+/* Дедупликация финалов: Chrome на Android и iOS Safari отдают повторные финалы
+   после сброса сессии. Не полагаемся на resultIndex — сравниваем с хвостом. */
+function overlapTail(a,b){
+  // максимальное суффикс-префиксное совпадение по словам
+  const aw=a.split(/\s+/).filter(Boolean);
+  const bw=b.split(/\s+/).filter(Boolean);
+  const max=Math.min(aw.length,bw.length,8);
+  for(let k=max;k>0;k--){
+    let ok=true;
+    for(let i=0;i<k;i++){
+      if(aw[aw.length-k+i].toLowerCase()!==bw[i].toLowerCase()){ok=false;break;}
+    }
+    if(ok) return k;
+  }
+  return 0;
+}
+function appendFinal(chunk){
+  chunk=chunk.replace(/\s+/g," ").trim();
+  if(!chunk) return;
+  const tail=finalText.slice(-Math.max(chunk.length*2,120)).toLowerCase();
+  if(tail.endsWith(chunk.toLowerCase())) return; // дубль
+  const ov=overlapTail(finalText,chunk);
+  if(ov>=chunk.split(/\s+/).length) return; // уже есть целиком
+  if(ov>0){
+    const parts=chunk.split(/\s+/);
+    finalText=(finalText+" "+parts.slice(ov).join(" ")).replace(/\s+/g," ").trim();
+  }else{
+    finalText=(finalText+" "+chunk).replace(/\s+/g," ").trim();
+  }
+}
+
+function scheduleRestart(){
+  clearTimeout(restartTimer);
+  if(!listening) return;
+  restartTimer=setTimeout(()=>{
+    if(!listening) return;
+    try{starting=true;rec.start();}catch(e){starting=false;}
+  },280);
+}
+
+async function ensureAudioVisualization(){
+  // AudioContext создаём только по пользовательскому жесту — иначе на iOS будет suspended
+  try{
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia) return;
+    mediaStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==="suspended"){try{await audioCtx.resume();}catch(e){}}
+    const src=audioCtx.createMediaStreamSource(mediaStream);
+    analyser=audioCtx.createAnalyser();analyser.fftSize=512;
+    src.connect(analyser);drawWave();
+  }catch(e){
+    // визуализация необязательна — не блокируем ввод
+    if(e&&(e.name==="NotAllowedError"||e.name==="SecurityError")){
+      showVoiceWarn("Доступ к микрофону запрещён. Открой настройки браузера → Разрешения → Микрофон → Разрешить и обнови страницу.");
+    }
+  }
+}
+
+async function startRec(){
+  if(!SR)return;
+  if(listening||starting)return;
+  clearVoiceWarn();
+  starting=true;
+
+  // На iOS AudioContext должен быть создан в контексте жеста — вызываем синхронно
+  await ensureAudioVisualization();
+
+  rec=new SR();
+  rec.lang="ru-RU";
+  // На iOS continuous не поддерживается — сессия завершится после паузы, рестарт делает onend
+  rec.continuous=!IS_IOS;
+  rec.interimResults=true;
+  rec.maxAlternatives=1;
+
+  // Если пользователь правил текст руками — стартуем с его варианта
+  if(userEdited){
+    finalText=tx.value.trim();
+    userEdited=false;
+  }
+  interim="";
+  lastRendered=tx.value;
+  lastFinalTs=null;
+
+  rec.onstart=()=>{starting=false;};
+
+  rec.onresult=e=>{
+    const now=(e.timeStamp&&Math.abs(e.timeStamp-Date.now())<60000)?e.timeStamp:Date.now();
+    let interimLocal="";
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const r=e.results[i];
+      if(r.isFinal){
+        if(lastFinalTs!==null){
+          const gap=now-lastFinalTs;
+          if(gap>700) speechPauseMarks.push({charPos:finalText.length,gapMs:gap});
+        }
+        lastFinalTs=now;
+        appendFinal(r[0].transcript);
+      }else{
+        interimLocal+=" "+r[0].transcript;
+      }
+    }
+    interim=interimLocal.trim();
+    if(!userEdited) renderTx();
+    else updWC();
+  };
+
+  rec.onerror=e=>{
+    if(e.error==="not-allowed"||e.error==="service-not-allowed"){
+      showVoiceWarn("Доступ к микрофону запрещён. Разреши его в настройках браузера.");
+      listening=false;
+    }else if(e.error==="network"){
+      showVoiceWarn("Распознавание речи требует интернет. Проверь соединение.");
+    }else if(e.error==="no-speech"){
+      // На мобильных это обычное дело после паузы — планируем рестарт
+      if(listening) scheduleRestart();
+    }else if(e.error==="aborted"){
+      // остановка пользователем — игнорируем
+    }else{
+      showVoiceWarn("Ошибка распознавания: "+e.error);
+    }
+  };
+
+  rec.onend=()=>{
+    starting=false;
+    if(listening){
+      // На iOS и Android сессия завершается сама — аккуратно перезапускаем
+      scheduleRestart();
+    }
+  };
+
+  try{
+    rec.start();
+  }catch(e){
+    starting=false;
+    showVoiceWarn("Не удалось запустить распознавание: "+(e&&e.message?e.message:"ошибка")+". Попробуй Chrome или Safari.");
+    return;
+  }
+
+  listening=true;
+  micBtn.classList.add("rec");micBtn.textContent="⏹";
+  micStatus.textContent="Слушаю… говори спокойно";micStatus.classList.add("live");
+  clearInterval(timerInt);
+  timerInt=setInterval(()=>{seconds++;$("timer").textContent=fmtT(seconds);},1000);
+}
+
+function stopRec(){
+  listening=false;
+  clearTimeout(restartTimer);restartTimer=null;
+  micBtn.classList.remove("rec");micBtn.textContent="🎙️";
+  micStatus.textContent="Готово! Проверь текст и нажми «Проверить пересказ»";micStatus.classList.remove("live");
+  clearInterval(timerInt);timerInt=null;
+  if(rec){
+    rec.onend=null;rec.onerror=null;rec.onresult=null;rec.onstart=null;
+    try{rec.stop();}catch(e){}
+    try{rec.abort();}catch(e){}
+    rec=null;
+  }
+  if(rafId){cancelAnimationFrame(rafId);rafId=null;}
+  if(mediaStream){mediaStream.getTracks().forEach(t=>t.stop());mediaStream=null;}
+  if(audioCtx){try{audioCtx.close();}catch(e){}audioCtx=null;}
+  const c=$("wave");if(c)c.getContext("2d").clearRect(0,0,c.width,c.height);
+}
+
+// При сворачивании вкладки на телефоне — аккуратно останавливаемся
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden && listening){
+    stopRec();
+    showVoiceWarn("Запись приостановлена, потому что вкладка была свёрнута. Нажми микрофон, чтобы продолжить.");
+  }
+});
+
+(function micEnv(){
+  const env=document.createElement("div");env.className="hint";env.style.marginTop="10px";env.style.textAlign="center";
+  const local=["localhost","127.0.0.1"].includes(location.hostname);
+  const okProto=location.protocol==="https:"||local||location.protocol==="file:";
+  const gm=!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia);
+  if(!SR){
+    env.innerHTML="⚠ Этот браузер не умеет распознавать речь. На телефоне нужен Chrome (Android) или Safari (iOS), либо Яндекс.Браузер. Можно написать пересказ текстом.";
+  }else if(!okProto){
+    env.innerHTML="⚠ Для микрофона нужен адрес <b>https://</b> или <b>localhost</b>. На телефоне открой сайт по https.";
+  }else if(!gm){
+    env.innerHTML="⚠ Браузер не даёт доступ к микрофону. Проверь разрешения.";
+  }else if(IS_IOS){
+    env.innerHTML="✓ Голосовой ввод работает (Safari). Из-за особенностей iOS запись может прерываться на паузах — просто продолжай говорить, микрофон перезапустится сам.";
+  }else{
+    env.innerHTML="✓ Голосовой ввод поддерживается. При первом нажатии браузер спросит разрешение — нажми «Разрешить».";
+  }
+  document.querySelector("#s3 .rec-area").appendChild(env);
+})();
+if(!SR){micBtn.style.opacity=".55";}
+micBtn.onclick=()=>{
+  if(!SR){showVoiceWarn("Голосовой ввод недоступен в этом браузере — напиши пересказ текстом.");return;}
+  if(listening||starting) stopRec();
+  else startRec();
+};
+$("clearBtn").onclick=()=>{
+  tx.value="";finalText="";interim="";seconds=0;$("timer").textContent="0:00";
+  speechPauseMarks=[];lastFinalTs=null;userEdited=false;lastRendered="";
+  updWC();
+};
+function updateReady(){
+  const srcWords=state.sources.reduce((a,s)=>a+wc(s.text||""),0);
+  const needSrc=srcWords<30;
+  const ok=!!state.topic&&wc(tx.value)>=10&&!needSrc;
+  $("checkBtn").disabled=!ok;
+  $("checkHint").textContent=!state.topic?"Сначала назови тему (шаг 1)"
+    :needSrc?"Приложи учебник в шаге 2 (сканы или текст, минимум 30 слов)"
+    :wc(tx.value)<10?"Расскажи или напиши пересказ (минимум 10 слов)"
+    :"Всё готово — жми красную кнопку!";
+}
+
+/* ====================================================================
+   Разметка пересказа пословно
+   ==================================================================== */
+function renderStudentAnswerWordLevel(chunks, corpusVocab, allCorpusNums, importantTerms, studentDates, factSet, fillerNames){
+  return chunks.map(c=>{
+    const scls=[];
+    if(c.verbatim) scls.push("s-verb");
+    else if(c.content.length>=4) scls.push(c.best>=.16?"s-good":"s-off");
+    if(c.sense<.5 && c.toks.length>=3 && !c.verbatim) scls.push("s-weak");
+    const parts=c.raw.split(/(\s+)/);
+    const inner=parts.map(tok=>{
+      if(/^\s+$/.test(tok)) return tok;
+      const clean=tok.replace(/[^а-яёА-ЯЁa-z0-9]/gi,"");
+      if(!clean) return esc(tok);
+      if(/^\d{3,4}$/.test(clean)){
+        const isCorrect=allCorpusNums.has(clean) && !factSet.has(clean);
+        return isCorrect?`<span class="w-num-y">${esc(tok)}</span>`:`<span class="m-fact">${esc(tok)}</span>`;
+      }
+      if(isRomanNumeral(clean)){
+        const up=clean.toUpperCase();
+        if(allCorpusNums.has(up)) return `<span class="w-num-y">${esc(tok)}</span>`;
+        return `<span class="m-fact">${esc(tok)}</span>`;
+      }
+      const low=clean.toLowerCase().replace(/ё/g,"е");
+      if(fillerNames.indexOf(low)>=0) return `<span class="m-filler">${esc(tok)}</span>`;
+      if(!isContent(low)) return esc(tok);
+      const st=stem(low);
+      let inCorpus=corpusVocab.has(st);
+      if(!inCorpus){for(const v of corpusVocab){if(related(st,v)){inCorpus=true;break;}}}
+      if(!inCorpus) return `<span class="w-off">${esc(tok)}</span>`;
+      if(importantTerms.has(st)) return `<span class="w-term">${esc(tok)}</span>`;
+      return esc(tok);
+    }).join("");
+    return `<span class="${scls.join(" ")}">${inner}</span>`;
+  }).join(" ");
+}
+
+/* ====================================================================
+   АНАЛИЗ
+   ==================================================================== */
+function analyze(){
+  const text=tx.value,title=state.customTitle;
+  const tokens=tokenize(text);
+  const words=tokens.filter(w=>!/^\d+$/.test(w)).length;
+  const low=norm(text);
+
+  const flatSegs=[];
+  state.sources.forEach(s=>{
+    const raw=String(s.text||"").replace(/([а-яёa-z0-9])-\s+([а-яёa-z0-9])/gi,"$1$2");
+    if(wc(raw)<1)return;
+    const secs=(s.sections&&s.sections.length)?s.sections:[{heading:null,text:raw}];
+    secs.forEach(sg=>flatSegs.push({heading:sg.heading||null,text:String(sg.text||"").replace(/\n+/g," ").trim()}));
+  });
+  const merged=[];
+  flatSegs.forEach(sg=>{
+    if(!sg.heading&&merged.length&&!merged[merged.length-1].heading){merged[merged.length-1].text+=" "+sg.text;}
+    else merged.push({heading:sg.heading,text:sg.text});
+  });
+  const corpusSents=[];const rawSpans=[];
+  merged.forEach(m=>{
+    const from=corpusSents.length;
+    (m.text.match(/[^.!?…]+[.!?…]*/g)||[]).forEach(raw=>{
+      const toks=tokenize(raw);
+      if(toks.length<2)return;
+      const terms=toks.filter(isContent).map(stem);
+      const content=[...new Set(terms)];
+      corpusSents.push({raw,toks,terms,content,wc:toks.length});
+    });
+    const to=corpusSents.length;
+    if(to>from)rawSpans.push({heading:m.heading,from,to});
+  });
+  const units=[];let cur=null;
+  rawSpans.forEach(sp=>{
+    if(sp.heading){if(cur)units.push(cur);cur={heading:sp.heading,from:sp.from,to:sp.to};}
+    else if(cur)cur.to=sp.to;
+    else cur={heading:null,from:sp.from,to:sp.to};
+  });
+  if(cur)units.push(cur);
+
+  const Ndoc=corpusSents.length||1;
+  const df=new Map();
+  corpusSents.forEach(s=>s.content.forEach(t=>df.set(t,(df.get(t)||0)+1)));
+  const idf=new Map();
+  df.forEach((v,k)=>idf.set(k,Math.log((Ndoc+1)/(v+1))+1));
+  const idfAvg=1+Math.log((Ndoc+1)/2);
+  function mkVec(terms){const tf=new Map();terms.forEach(t=>tf.set(t,(tf.get(t)||0)+1));const v=new Map();tf.forEach((c,t)=>v.set(t,c*(idf.has(t)?idf.get(t):idfAvg)));return v;}
+  corpusSents.forEach(s=>s.vec=mkVec(s.terms));
+
+  const corpusVocab=new Set();
+  corpusSents.forEach(cs=>cs.content.forEach(t=>corpusVocab.add(t)));
+
+  const lsa=buildLSA(corpusSents);
+  if(lsa.ready)corpusSents.forEach((s,j)=>s.z=lsa.sentZ[j]);
+
+  const INTRO_MARK=/узнаем|познакоми|рассмотрим|вспомним|в этом параграфе|в этой теме|в данном параграфе|изучим|вы узна|ранее (мы|вы)|начнём|начнем/;
+  const sections=[];
+  units.forEach(u=>{
+    const n=u.to-u.from;
+    const subs=n>=6?segmentSentences(corpusSents.slice(u.from,u.to)):[{from:0,to:n}];
+    subs.forEach((s,i)=>sections.push({from:u.from+s.from,to:u.from+s.to,heading:i===0?u.heading:null,unitStart:i===0,preamble:!u.heading&&i===0}));
+  });
+  let realHeads=0;
+  sections.forEach((sec,i)=>{
+    sec.i=i;
+    if(sec.heading){sec.title=sec.heading;if(!sec.isIntro)realHeads++;}
+    else if(sec.preamble){
+      const arr=[];for(let j=sec.from;j<sec.to;j++)arr.push(corpusSents[j].raw);
+      const tt=arr.join(" ").toLowerCase();
+      if(INTRO_MARK.test(tt)||(sec.to-sec.from)<=5){sec.title="Введение";sec.heading="Введение";sec.isIntro=true;}
+      else sec.title=literalTitle(sec.from,sec.to,corpusSents);
+    }
+    else sec.title=literalTitle(sec.from,sec.to,corpusSents);
+    let wcnt=0;for(let j=sec.from;j<sec.to;j++)wcnt+=corpusSents[j].wc;
+    sec.wc=wcnt;sec.spoken=0;
+  });
+  sections.forEach(sec=>{const v=new Map();for(let j=sec.from;j<sec.to;j++)addVec(v,corpusSents[j].vec);sec.vec=v;});
+
+  function simVecs(va,za,cs){
+    const direct=softCosine(va,cs.vec);
+    if(lsa.ready&&za&&cs.z)return .45*direct+.55*Math.max(0,cosArr(za,cs.z));
+    return direct;
+  }
+
+  const usePauseMarks=speechPauseMarks.length>0 && Math.abs(text.length-finalText.length)<Math.max(50,finalText.length*0.15);
+  const sentTexts=restoreSentences(text, usePauseMarks?speechPauseMarks:[]);
+  const chunks=sentTexts.map(raw=>{
+    const toks=tokenize(raw);
+    const terms=toks.filter(isContent).map(stem);
+    const content=[...new Set(terms)];
+    const c={raw,toks,terms,content,wc:toks.length};
+    c.vec=mkVec(terms);
+    if(lsa.ready)c.z=lsa.embedMap(c.vec);
+    let best=0,bestCs=null;
+    corpusSents.forEach(cs=>{const s=simVecs(c.vec,c.z,cs);if(s>best){best=s;bestCs=cs;}});
+    c.best=best;c.bestCs=bestCs;
+    c.sense=sentSense(c,content);
+    if(bestCs&&content.length>=4){
+      const set=new Set();
+      for(let i=0;i+1<bestCs.content.length;i++)set.add(bestCs.content[i]+" "+bestCs.content[i+1]);
+      let hit=0,n=0;
+      for(let i=0;i+1<content.length;i++){n++;if(set.has(content[i]+" "+content[i+1]))hit++;}
+      c.bigramOv=n?hit/n:0;
+    }else c.bigramOv=0;
+    c.verbatim=content.length>=4&&bestCs&&((softCosine(c.vec,bestCs.vec)>=.72)||(c.best>=.55&&c.bigramOv>=.55));
+    return c;
+  });
+  const sentences=chunks.filter(c=>c.toks.length>1).length;
+
+  const pairData=[];
+  for(let i=0;i+1<chunks.length;i++){
+    const m=new Map();addVec(m,chunks[i].vec);addVec(m,chunks[i+1].vec);
+    pairData.push({vec:m,z:lsa.ready?lsa.embedMap(m):null});
+  }
+
+  const stuPairs=new Set();const stuPairsArr=[];
+  chunks.forEach(c=>{
+    const cw=c.toks.filter(isContent);
+    for(let i=0;i+1<cw.length;i++){
+      const sa=stem(cw[i]),sb=stem(cw[i+1]);
+      const key=sa+" "+sb;
+      if(stuPairs.has(key))continue;
+      const pred=lemma(cw[i]).pos==="v"||lemma(cw[i]).pos==="a"||lemma(cw[i+1]).pos==="v"||lemma(cw[i+1]).pos==="a";
+      const nom=lemma(cw[i]).pos==="n"||lemma(cw[i+1]).pos==="n";
+      if(!(pred&&nom))continue;
+      stuPairs.add(key);stuPairsArr.push([sa,sb]);
+    }
+  });
+
+  const stuSeq=tokens.filter(isContent).map(t=>lemma(t).l);
+  const stuLemmaSet=new Set(stuSeq);
+  const termRank=[...df.entries()].filter(([t,c])=>t.length>=5).map(([t,c])=>({t,score:c*(idf.get(t)||1)})).sort((a,b)=>b.score-a.score).slice(0,14);
+  let termHit=0;
+  termRank.forEach(x=>{
+    if(stuLemmaSet.has(x.t)){termHit++;return;}
+    for(const sl of stuLemmaSet){if(related(sl,x.t)){termHit++;break;}}
+  });
+  const termCov=termRank.length?termHit/termRank.length:.5;
+
+  const facts=extractFacts(corpusSents);
+  const imp=extractImportant(corpusSents,df,termRank,facts.names);
+  const importantTerms=imp.termSet;
+  const studentDates=extractStudentNums(text);
+  const quiz=generateQuiz(corpusSents,importantTerms,facts.names);
+
+  const stuVocabSet=new Set(chunks.flatMap(c=>c.content));
+  let wordHits=0;
+  corpusVocab.forEach(t=>{
+    if(stuVocabSet.has(t)){wordHits++;return;}
+    for(const st of stuVocabSet){if(related(t,st)){wordHits++;return;}}
+  });
+  const wordCov=corpusVocab.size?wordHits/corpusVocab.size:0;
+
+  sections.forEach(sec=>{
+    let termCount=0;
+    for(let j=sec.from;j<sec.to;j++){
+      for(const t of corpusSents[j].content){
+        if(importantTerms.has(t)||termRank.some(r=>related(r.t,t)))termCount++;
+      }
+    }
+    sec.termCount=termCount;
+  });
+  const totalWC=sections.reduce((a,s)=>a+s.wc,0)||1;
+  const totalTC=sections.reduce((a,s)=>a+s.termCount,0)||1;
+  sections.forEach(sec=>{
+    const wordW=sec.wc/totalWC;
+    const termW=sec.termCount/totalTC;
+    sec.weight=Math.max(0.55*termW+0.45*wordW,0.02/Math.max(1,sections.length));
+  });
+  const totalWeight=sections.reduce((a,s)=>a+s.weight,0)||1;
+  sections.forEach(sec=>sec.weight/=totalWeight);
+
+  const stuBlocks=chunks.length>=4?segmentSentences(chunks.map(c=>({vec:c.vec,wc:c.wc}))):[{from:0,to:chunks.length}];
+  const blockMap=stuBlocks.map(b=>{
+    const v=new Map();
+    for(let i=b.from;i<b.to;i++)addVec(v,chunks[i].vec);
+    let best=-1,bi=-1;
+    sections.forEach((sec,si)=>{const s=softCosine(v,sec.vec);if(s>best){best=s;bi=si;}});
+    return {from:b.from,to:b.to,sec:best>=.15?bi:-1,score:best};
+  });
+  blockMap.forEach(b=>{if(b.sec>=0)for(let i=b.from;i<b.to;i++)sections[b.sec].spoken++;});
+  const blockSeq=[];blockMap.forEach(b=>{if(b.sec>=0&&(!blockSeq.length||blockSeq[blockSeq.length-1]!==b.sec))blockSeq.push(b.sec);});
+  let blockOrderScore=.8,blockJump=null;
+  if(blockSeq.length>=3){
+    blockOrderScore=clamp((kendall(blockSeq)+1)/2,0,1);
+    for(let i=0;i<blockSeq.length-1;i++)if(blockSeq[i+1]<blockSeq[i]){blockJump=[blockSeq[i],blockSeq[i+1]];break;}
+  }
+  const blockCov=sections.length?sections.filter(s=>blockMap.some(b=>b.sec===s.i)).length/sections.length:.5;
+
+  let wAll=0,covAll=0;
+  sections.forEach(sec=>{
+    let wsum=0,wcov=0,matched=0;
+    for(let j=sec.from;j<sec.to;j++){
+      const cs=corpusSents[j];
+      let best=0;
+      chunks.forEach(c=>{const s=simVecs(c.vec,c.z,cs);if(s>best)best=s;});
+      pairData.forEach(p=>{const s=simVecs(p.vec,p.z,cs);if(s>best)best=s;});
+      cs.best=best;
+      if(best>=.4)matched++;
+      wsum+=cs.wc;wcov+=cs.wc*clamp(best/.45,0,1);
+    }
+    sec.matchedS=matched;sec.totalS=sec.to-sec.from;
+    const recall=wsum?wcov/wsum:0;
+    const blockHit=blockMap.some(b=>b.sec===sec.i)?1:0;
+    sec.recall=recall;
+    sec.score=clamp(.7*recall+.3*blockHit,0,1);
+    sec.status=sec.score>=.5?"full":sec.score>=.22?"part":"none";
+    wAll+=sec.weight;covAll+=sec.weight*recall;
+  });
+  const recallAll=wAll?covAll/wAll:0;
+
+  const sourceBigrams=new Set();
+  corpusSents.forEach(cs=>{for(let i=0;i+1<cs.content.length;i++)sourceBigrams.add(cs.content[i]+"|"+cs.content[i+1]);});
+  const studentBigrams=new Set();
+  chunks.forEach(c=>{for(let i=0;i+1<c.content.length;i++)studentBigrams.add(c.content[i]+"|"+c.content[i+1]);});
+  const studentBigramArr=[...studentBigrams];
+  let bigramHits=0;
+  sourceBigrams.forEach(bg=>{
+    if(studentBigrams.has(bg)){bigramHits++;return;}
+    const parts=bg.split("|");
+    for(const sg of studentBigramArr){
+      const sp=sg.split("|");
+      if(related(parts[0],sp[0])&&related(parts[1],sp[1])){bigramHits++;return;}
+    }
+  });
+  const bigramCov=sourceBigrams.size?bigramHits/sourceBigrams.size:0;
+
+  const sourceTrigrams=new Set();
+  corpusSents.forEach(cs=>{for(let i=0;i+2<cs.content.length;i++)sourceTrigrams.add(cs.content.slice(i,i+3).join("|"));});
+  const studentTrigrams=new Set();
+  chunks.forEach(c=>{for(let i=0;i+2<c.content.length;i++)studentTrigrams.add(c.content.slice(i,i+3).join("|"));});
+  const studentTriArr=[...studentTrigrams];
+  let trigramHits=0;
+  sourceTrigrams.forEach(tg=>{
+    if(studentTrigrams.has(tg)){trigramHits++;return;}
+    const parts=tg.split("|");
+    for(const sg of studentTriArr){
+      const sp=sg.split("|");
+      if(related(parts[0],sp[0])&&related(parts[1],sp[1])&&related(parts[2],sp[2])){trigramHits++;return;}
+    }
+  });
+  const trigramCov=sourceTrigrams.size?trigramHits/sourceTrigrams.size:0;
+
+  let coverage=clamp(0.40*recallAll+0.20*termCov+0.20*wordCov+0.10*bigramCov+0.10*trigramCov,0,1);
+
+  const realSent=chunks.filter(c=>c.sense>=.65&&c.toks.length>=4&&c.toks.some(t=>lemma(t).pos==="v")&&c.toks.some(t=>lemma(t).pos==="n"||lemma(t).pos==="a"));
+  const withContent=chunks.filter(c=>c.content.length>=4);
+  const verbatimChunks=chunks.filter(c=>c.verbatim);
+  const verbatimRatio=withContent.length?verbatimChunks.length/withContent.length:0;
+  const sentQuality=chunks.length?realSent.length/chunks.length:0;
+  const fragmented=words>=10&&(realSent.length<2||sentQuality<.4);
+  if(fragmented)coverage*=clamp(.35+.13*realSent.length,.35,.8);
+
+  const secFull=sections.filter(s=>s.status==="full");
+  const secPart=sections.filter(s=>s.status==="part");
+  const secNone=sections.filter(s=>s.status==="none");
+
+  let paraCnt=0,paraDen=0;
+  chunks.forEach(c=>{if(c.content.length>=4){paraDen++;if(c.best>=.22&&c.best<=.68&&!c.verbatim)paraCnt++;}});
+  const paraScore=paraDen?paraCnt/paraDen:.5;
+
+  const connList=low.match(/потому что|поэтому|благодаря|в результате|кроме того|во-первых|во-вторых|затем|после этого|после того как|сначала|из-за|чтобы|в связи с|более того|однако|при этом|вместе с тем|так как|ведь|по этой причине/g)||[];
+  const pronList=low.match(/\b(он|она|они|оно|его|её|их|ему|ей|им|это|этого|этому|этой|эти|этот|эта|который|которая|которые|которого|там|туда|тогда|так|такой|такая|такое|всё|весь|вся)\b/g)||[];
+  const connDensity=words?connList.length/(words/100):0;
+  const pronDensity=realSent.length?pronList.length/realSent.length:0;
+  const paraphrase=clamp(1-Math.max(0,verbatimRatio-.15)/.6,0,1);
+  const discourseScore=clamp(.35*Math.min(1,connDensity/3)+.25*Math.min(1,pronDensity/2)+.40*paraphrase,0,1);
+  const torn=words>=30&&(verbatimRatio>=.45||(discourseScore<.35&&sentQuality<.5));
+  const chainVal=chainScore(chunks);
+  const skel=skeletonScore(low);
+
+  function headingPosInRet(sec){
+    if(!sec.heading)return {pos:-1,found:false};
+    const hWords=tokenize(sec.heading).filter(isContent).map(stem);
+    if(hWords.length===0)return {pos:-1,found:false};
+    const threshold=Math.max(1,Math.ceil(hWords.length*.5));
+    for(let ci=0;ci<chunks.length;ci++){
+      let hit=0;
+      for(const hw of hWords){
+        for(const rs of chunks[ci].terms){
+          if(rs===hw||(rs.length>=5&&hw.length>=5&&(rs.startsWith(hw)||hw.startsWith(rs)))){hit++;break;}
+        }
+        if(hit>=threshold)return {pos:ci,found:true};
+      }
+    }
+    return {pos:-1,found:false};
+  }
+  const headPosData=sections.map(sec=>({sec,...headingPosInRet(sec)}));
+  const spokenHead=headPosData.filter(x=>x.found);
+  let headOrderScore=null,orderPair=null;
+  if(spokenHead.length>=2){
+    const byPos=[...spokenHead].sort((a,b)=>a.pos-b.pos);
+    const seq=byPos.map(x=>x.sec.i);
+    headOrderScore=clamp((kendall(seq)+1)/2,0,1);
+    if(headOrderScore<.75){for(let i=0;i<seq.length-1;i++){if(seq[i]>seq[i+1]){orderPair=[sections[seq[i]],sections[seq[i+1]]];break;}}}
+  }
+  let orderScore=.8;
+  if(headOrderScore!=null&&blockSeq.length>=3)orderScore=.5*headOrderScore+.5*blockOrderScore;
+  else if(headOrderScore!=null)orderScore=headOrderScore;
+  else if(blockSeq.length>=3)orderScore=blockOrderScore;
+
+  const factIssues=checkFacts(chunks,facts);
+  const corpusTokens=[];corpusSents.forEach(s=>{for(const t of s.toks)corpusTokens.push(t);});
+  const corpusNums=new Set(corpusTokens.filter(w=>/^\d+$/.test(w)));
+  const corpusCenturies=extractRomanCenturies(corpusSents.map(cs=>cs.raw).join(" "));
+  const allCorpusNums=new Set([...corpusNums,...corpusCenturies]);
+  const contradictions=detectContradictions(chunks,corpusSents,corpusNums,corpusCenturies);
+  const unknownNums=[...studentDates].filter(n=>!allCorpusNums.has(n));
+
+  const cosSim=cosine(vec(tokens),vec(corpusTokens));
+  const simScore=clamp(.5*Math.min(1,cosSim*3.2)+.5*termCov,0,1);
+  const volScore=clamp(words/170,0,1);
+  const uniq=words?new Set(tokens).size/tokens.length:0;
+  const uniqScore=clamp((uniq-.35)/.35,0,1);
+  const titleWords=kwTokens(title);
+  const firstStems=new Set((chunks[0]?chunks[0].toks:[]).map(stem));
+  let intro=0;
+  if(titleWords.length){let hit=0;titleWords.forEach(w=>{const ts=stem(w);for(const rs of firstStems){if(related(rs,ts)){hit++;break;}}});intro=hit/titleWords.length;}
+  const conclMarkers=/таким образом|итак|в заключение|подводя итог|в итоге|следовательно|можно сделать вывод|из этого следует|в общем и целом|выходит(,| что)|получается(,| что)|вот почему|поэтому можно сказать|мы узнали|теперь (мы )?зна(ем|ю)|в этом и (заключается|состоит)|главное(,| —)/;
+  const lastTwo=chunks.slice(-2).map(c=>c.raw).join(" ").toLowerCase();
+  const lastChunk=chunks[chunks.length-1];
+  const lastRelTitle=lastChunk&&titleWords.some(w=>{const ts=stem(w);return lastChunk.terms.some(rs=>related(rs,ts));});
+  const concl=conclMarkers.test(lastTwo)?(lastRelTitle?1:.7):(conclMarkers.test(low)?.4:0);
+  const conn=(low.match(/потому что|поэтому|благодаря|в результате|кроме того|во-первых|затем|после этого|сначала|из-за|чтобы|в связи с|более того/g)||[]).length;
+  const structScore=clamp(.30*intro+.25*concl+.25*Math.min(1,conn/4)+.20*skel,0,1);
+  let cohScore=.7;
+  if(chunks.length>=2){
+    let sum=0;
+    for(let i=0;i<chunks.length-1;i++){const a=new Set(chunks[i].terms),b=new Set(chunks[i+1].terms);let ov=0;for(const x of a){if(b.has(x))ov++;}sum+=ov/Math.max(1,Math.min(a.size,b.size));}
+    cohScore=clamp((sum/(chunks.length-1))/.3,0,1);
+  }
+  const focused=withContent.filter(c=>c.best>=.16&&!c.verbatim).length;
+  const focusScore=withContent.length?focused/withContent.length:.7;
+  const senseChunks=chunks.filter(c=>c.toks.length>=3);
+  const senseAvg=senseChunks.length?senseChunks.reduce((a,c)=>a+c.sense,0)/senseChunks.length:.7;
+  let monoScore=1;
+  if(chunks.length>=3){const starts=chunks.map(c=>stem(c.toks[0]||""));const cnt={};starts.forEach(s=>{cnt[s]=(cnt[s]||0)+1;});const mx=Math.max(...Object.values(cnt))/starts.length;monoScore=clamp(1-(mx-.35)/.4,0,1);}
+  const harmonyScore=clamp(.16*cohScore+.12*focusScore+.12*senseAvg+.08*monoScore+.08*sentQuality+.16*discourseScore+.14*chainVal+.14*paraScore,0,1);
+
+  const fillers=[];
+  [["как бы",/как бы/g],["типа",/типа/g],["короче",/короче/g],["в общем",/в общем/g],["это самое",/это самое/g],["так сказать",/так сказать/g],["ну вот",/ну вот/g],["значит",/(^|[\s,])значит(?=[\s,])/g],["вот",/(^|[\s,.!?])вот(?=[\s,])/g],["ну",/(^|[\s,.!?])ну(?=[\s,.!?])/g]]
+  .forEach(([n,re])=>{const m=low.match(re);if(m)fillers.push([n,m.length]);});
+  const fillerCnt=fillers.reduce((a,f)=>a+f[1],0);
+  const cleanScore=clamp(1-fillerCnt/Math.max(6,words/35),0,1);
+  let fillerSeg=null;
+  if(fillerCnt>=3){for(const [n] of fillers){const idx=low.indexOf(n);if(idx>=0){fillerSeg=cut(text.slice(Math.max(0,idx-40),110),100);break;}}}
+
+  const fillerNames=fillers.map(f=>f[0]).sort((a,b)=>b.length-a.length);
+  const factSet=new Set(factIssues);
+  const stuHtml=renderStudentAnswerWordLevel(chunks,corpusVocab,allCorpusNums,importantTerms,studentDates,factSet,fillerNames);
+
+  const srcHtml=buildSrcHtml(sections,corpusSents,null,studentDates,importantTerms,stuLemmaSet);
+  let bookText="";
+  sections.forEach((sec,i)=>{
+    bookText+=(sec.heading?"### "+sec.heading:"### Часть "+(i+1)+" · "+sec.title)+"\n";
+    let cnt=0;
+    for(let j=sec.from;j<sec.to&&cnt<8;j++){bookText+=corpusSents[j].raw+"\n";cnt++;}
+  });
+  if(bookText.length>8000)bookText=bookText.slice(0,8000)+"\n(сокращено)";
+
+  const f=[coverage,simScore,volScore,structScore,harmonyScore,orderScore,uniqScore,cleanScore];
+  let grade=clamp(NET.fwd(f),2,5);
+  if(words<100&&coverage<.6)grade=clamp(grade-.4,2,5);
+  if(fragmented)grade=clamp(grade-.3,2,5);
+  if(torn)grade=Math.min(grade,3.4);
+  let capped=false;
+  if((structScore+harmonyScore)/2<.4&&grade>3.7){grade=3.7;capped=true;}
+  const tp=predictTeacher(f);
+  if(tp!=null){const wT=clamp((TEACHER_N-3)/20,0,.6);grade=grade*(1-wT)+tp*wT;}
+  const adaptiveMult=adaptiveMultiplier();
+  grade=clamp(grade*adaptiveMult,2,5);
+  const mark=grade>=4.5?5:grade>=3.5?4:grade>=2.5?3:2;
+  const conf=Math.round(clamp(58+(Math.abs(grade-Math.round(grade)))*70+(grade>4.4||grade<2.6?16:0),55,97));
+
+  const offChunk=withContent.find(c=>c.best<.16&&!c.verbatim)||null;
+  const weakChunk=senseChunks.find(c=>c.sense<.5)||null;
+  const repCnt=new Map(),repWord=new Map();
+  chunks.forEach(c=>c.toks.forEach(w=>{
+    if(!isContent(w))return;
+    const s=stem(w);repCnt.set(s,(repCnt.get(s)||0)+1);if(!repWord.has(s))repWord.set(s,w);
+  }));
+  let repBest=null;repCnt.forEach((c,s)=>{if(c>=4&&(!repBest||c>repBest[1]))repBest=[s,c];});
+
+  const plan=blockMap.filter(b=>b.sec>=0).map(b=>(b.sec+1)).join(" → ");
+  const sumParts=[];
+  sumParts.push(`Ответ из <b>${words}</b> слов (${fmtT(seconds)}). Учебник прочитан целиком: вопросы и задания отсечены, страницы склеены и разбиты на <b>${sections.length}</b> смысловых частей${realHeads?`, из них ${realHeads} — с заголовками из учебника`:""}. Полнота по смыслу: <b>${Math.round(coverage*100)}%</b> (полностью — ${secFull.length}, частично — ${secPart.length}, не рассказано — ${secNone.length}). Термины — ${Math.round(termCov*100)}%, слова — ${Math.round(wordCov*100)}%, словосочетания — ${Math.round(bigramCov*100)}% (триграммы — ${Math.round(trigramCov*100)}%). Своими словами — ${Math.round(paraScore*100)}%. Настоящих предложений: ${realSent.length} из ${chunks.length}.`);
+  if(plan)sumParts.push(`План твоего ответа по частям учебника: <b>${plan}</b>${blockJump?" — есть скачок между частями":""}.`);
+  if(torn)sumParts.push(`Ответ похож на набор фраз, вырванных из учебника: ${verbatimChunks.length} из ${withContent.length} содержательных фрагментов почти дословно совпадают с параграфом.`);
+  if(factIssues.length)sumParts.push(`Проверка фактов: даты ${factIssues.slice(0,3).join(", ")} названы вне контекста своих событий из учебника.`);
+  if(contradictions.length)sumParts.push(`Обнаружены возможные противоречия: ${contradictions.map(c=>c.msg).join(" ")}`);
+  if(capped&&!torn)sumParts.push(`Отметка ограничена: структура и организованность ответа слабые.`);
+  if(orderPair)sumParts.push(`Порядок изложения нарушен: часть «${orderPair[0].title}» рассказана раньше части «${orderPair[1].title}».`);
+  if(chainVal<.5&&words>=40)sumParts.push(`Цепочки мыслей рвутся: местоимения не связаны с предыдущими предложениями.`);
+  if(offChunk)sumParts.push(`Есть предложения, уходящие от темы: <span class="hl">«${cut(offChunk.raw,100)}»</span>.`);
+  if(unknownNums.length)sumParts.push(`Вызывают сомнения числа/века ${unknownNums.slice(0,3).join(", ")} — в приложенном материале их нет.`);
+  const summ=sumParts.map(p=>`<p>${p}</p>`).join("");
+
+  const good=[],bad=[];
+  if(torn)bad.unshift(`Ответ составлен из фраз, вырванных из учебника: около ${Math.round(verbatimRatio*100)}% содержательных фрагментов дословны. Пересказывай своими словами.`);
+  if(fragmented&&!torn)bad.push(`Это пока не связный пересказ, а набор обрывков: настоящих предложений ${realSent.length} из ${chunks.length}.`);
+  if(discourseScore>=.65&&sentQuality>=.6&&!torn)good.push("Связный пересказ своими словами.");
+  if(paraScore>=.6&&!torn&&verbatimRatio<.2)good.push("Пересказываешь своими словами, сохраняя смысл.");
+  if(secFull.length)good.push(`Полностью раскрыты части: ${secFull.slice(0,3).map(s=>`«${s.title}»`).join(", ")}.`);
+  if(orderScore>=.8&&(spokenHead.length>=2||blockSeq.length>=3))good.push("Порядок изложения совпадает с учебником.");
+  if(chainVal>=.7&&words>=40)good.push("Мысли связаны: местоимения и отсылки ведут рассказ ровно.");
+  if(termCov>=.7)good.push("Хорошее владение терминами темы.");
+  if(intro>=1)good.push("Тема названа в начале.");
+  if(concl>=1)good.push(`Есть вывод в конце: «${cut(chunks[chunks.length-1].raw,80)}».`);
+  if(words>=140)good.push("Уверенный объём ответа.");
+  if(fillerCnt<=1&&words>30)good.push("Речь чистая, почти без слов-паразитов.");
+
+  if(coverage<.7)bad.push(`Тема раскрыта лишь на ${Math.round(coverage*100)}%. Добавь материал из частей, отмеченных красным.`);
+  secNone.slice(0,3).forEach(sec=>bad.push(`Часть «${sec.title}» совсем не рассказана.`));
+  secPart.slice(0,3).forEach(sec=>bad.push(`Часть «${sec.title}» раскрыта не полностью.`));
+  if(termCov<.4)bad.push("Мало терминов учебника — называй понятия точно.");
+  if(blockJump)bad.push(`Рассказ «прыгает»: после части ${blockJump[0]+1} ты перескочил к части ${blockJump[1]+1}.`);
+  if(factIssues.length)bad.push(`Даты ${factIssues.slice(0,3).join(", ")} названы вне контекста — проверь события.`);
+  contradictions.forEach(c=>bad.push(c.msg));
+  if(words<100)bad.push(`Пересказ краткий (${words} слов при цели 130–180).`);
+  else if(words<130&&coverage<.8)bad.push(`Объём ниже желательного (${words} слов). Цель — 130–180.`);
+  if(orderScore<.6&&orderPair)bad.push(`Веди рассказ по порядку: «${orderPair[1].title}» раньше «${orderPair[0].title}».`);
+  if(capped&&!torn)bad.push("Добавь вступление, связки и вывод.");
+  if(skel<0.35)bad.push("Нет объяснений причин и определений («это…», «потому что…»).");
+  if(chainVal<.5&&words>=40)bad.push("Прежде чем говорить «он»/«это», назови, о ком/чём речь.");
+  if(sentences>=3&&cohScore<.5)bad.push("Предложения слабо связаны: соседние говорят о разном.");
+  if(concl===0)bad.push("В конце нет вывода. Заверши: «Таким образом…», «Итак…».");
+  if(offChunk)bad.push(`Предложение «${cut(offChunk.raw,90)}» уходит от темы.`);
+  if(weakChunk)bad.push(`Есть обрывочные фразы, например: «${cut(weakChunk.raw,90)}».`);
+  if(monoScore<.6)bad.push("Предложения начинаются однообразно.");
+  if(unknownNums.length)bad.push(`Проверь числа/века <span class="hl">${unknownNums.slice(0,4).join(", ")}</span>: в учебнике их нет.`);
+  if(fillerCnt>=3)bad.push(`Слова-паразиты (${fillerCnt} шт.)${fillerSeg?`, например: «…${fillerSeg}…»`:""}.`);
+  if(intro<1)bad.push(`Ответ начинается с «${cut(chunks[0].raw,70)}». Лучше: «Речь пойдёт о ${title}…».`);
+  if(simScore<.35&&words>40)bad.push("Опирайся на формулировки учебника.");
+  if(repBest&&uniqScore<.6)bad.push(`Слово «${repWord.get(repBest[0])}» повторяется ${repBest[1]} раз.`);
+  if(!good.length)good.push("Главное — ты не сдался! Ниже план, как сделать ответ сильнее.");
+
+  const secData=sections.map(s=>({title:s.title,heading:s.heading,status:s.status,from:s.from,to:s.to,spoken:s.spoken,matchedS:s.matchedS,totalS:s.totalS,weight:s.weight,termCount:s.termCount}));
+  return {title,words,sentences,seconds,f,grade,mark,conf,coverage,stuHtml,srcHtml,summ,good,bad,secData,corpusSents,bookText,studentText:text,plan,quiz,contradictions,wordCov,bigramCov,trigramCov};
+}
+function buildSrcHtml(secData,sents,ovList,studentDates,importantTerms,stuLemmas){
+  const stMap={};
+  if(Array.isArray(ovList))ovList.forEach(o=>{if(o&&o.title&&["full","part","none"].indexOf(o.status)>=0)stMap[norm(String(o.title))]=o.status;});
+  return secData.map((sec,i)=>{
+    let inner="",shown=0;
+    for(let j=sec.from;j<sec.to;j++){
+      if(shown>=60){inner+="<span> …</span>";break;}
+      shown++;
+      const cs=sents[j];
+      const cls=cs.best>=.4?"s-cov":cs.best>=.18?"s-part":"s-miss";
+      inner+=`<span class="${cls}">${markImportant(cs.raw,studentDates,importantTerms,stuLemmas)}</span>`;
+    }
+    const st=stMap[norm(sec.title)]||stMap[norm(sec.heading||"")]||sec.status;
+    const tag=st==="full"?'<em class="cov-tag full">рассказана</em>':st==="part"?'<em class="cov-tag part">частично</em>':'<em class="cov-tag none">не рассказана</em>';
+    const stat=`<span class="sec-stat">в ответе: ${sec.spoken} предл. · найдено ${sec.matchedS}/${sec.totalS} · вес ${Math.round((sec.weight||0)*100)}%</span>`;
+    const head=sec.heading
+      ?`<span class="sec-head">${esc(sec.heading)} ${tag}</span>${stat}`
+      :`<span class="src-ttl">Часть ${i+1} · ${esc(sec.title)} ${tag}${stat}</span>`;
+    return `<p>${head}${inner}</p>`;
+  }).join("");
+}
+
+function buildNet(){
+  const svg=$("netSvg"),L=[8,8,4,1],xs=[46,158,270,382],H=170;let s="";const pos=[];
+  L.forEach((n,l)=>{const arr=[];for(let i=0;i<n;i++){arr.push([xs[l],n===1?H/2:18+i*(H-36)/(n-1)]);}pos.push(arr);});
+  for(let l=0;l<L.length-1;l++)for(const[x1,y1]of pos[l])for(const[x2,y2]of pos[l+1])s+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+  L.forEach((n,l)=>pos[l].forEach(([x,y],i)=>{s+=`<circle cx="${x}" cy="${y}" r="6" style="animation-delay:${(l*.18+i*.06).toFixed(2)}s"/>`;}));
+  svg.innerHTML=s;
+}
+buildNet();
+const VERDICT={5:"Отлично! Материал раскрыт, речь уверенная.",4:"Хорошо! Есть что дополнить — загляни в советы.",3:"Неплохо, но тема раскрыта не полностью.",2:"Тему стоит повторить по источнику и попробовать ещё раз."};
+const NAMES=["Полнота раскрытия","Опора на источник","Объём ответа","Структура и логика","Гармоничность изложения","Порядок изложения","Богатство речи","Чистота речи"];
+let CURRENT_QUIZ=null;
+function buildQuizBody(quiz){
+  $("quizBody").innerHTML=quiz.map((q,i)=>`
+    <div class="quiz-q">
+      <div class="quiz-qtext">${i+1}. ${esc(q.q)}</div>
+      <input type="text" class="quiz-in" id="qin${i}" placeholder="Твой ответ" autocapitalize="off" autocorrect="off" enterkeyhint="next">
+      <span class="quiz-fb" id="qfb${i}"></span>
+    </div>`).join("");
+  $("quizResult").textContent="";
+  $("quizCheck").onclick=()=>{
+    let ok=0;
+    quiz.forEach((q,i)=>{
+      const val=$("qin"+i).value;
+      const goodAns=checkQuizAnswer(q,val);
+      if(goodAns)ok++;
+      const fb=$("qfb"+i);
+      fb.textContent=goodAns?"✓ Верно":"✗ Правильный ответ: "+q.answer;
+      fb.className="quiz-fb "+(goodAns?"ok":"bad");
+    });
+    $("quizResult").textContent=`Результат: ${ok} из ${quiz.length}`;
+  };
+}
+function renderResults(r,ov){
+  ov=ov||{};
+  const res=$("results");res.classList.remove("hidden");
+  const grade=ov.grade!=null?ov.grade:r.grade;
+  const mark=grade>=4.5?5:grade>=3.5?4:grade>=2.5?3:2;
+  $("stamp").textContent=mark;
+  const st=$("stamp");st.classList.remove("in");void st.offsetWidth;st.classList.add("in");
+  $("verdict").textContent=ov.verdict||VERDICT[mark];
+  $("resMeta").innerHTML=`Тема: <b>${r.title}</b>${state.subjectName?` · ${state.subjectName}`:""} · ${r.words} слов · ${r.sentences} предл. · время ответа ${fmtT(r.seconds)}<br>Оценка: <b>${grade.toFixed(1).replace(".",",")}</b> из 5`;
+  LAST_F=ov.f||r.f;
+  saveResult(r,grade);
+  renderProgressCard();renderAchCard();
+  if(!Auth.user)toast("Работаешь без входа — результат не сохранён в статистику.");
+  const thumbs=state.sources.map((s,i)=>(s.img&&!s.pending)?`<img class="res-thumb" data-view="${i}" src="${s.img}" alt="" title="${s.name}">`:"").join("");
+  if(thumbs){$("resMeta").insertAdjacentHTML("beforeend",`Учтённые сканы (нажми, чтобы открыть):<br><span class="res-thumbs">${thumbs}</span>`);}
+  document.querySelectorAll("#resMeta .res-thumb").forEach(im=>im.onclick=()=>openView(+im.dataset.view));
+  $("nnNote").textContent=`локальная нейросеть: Porter-стеммер, LSA, термины, биграммы+триграммы, века, противоречия · уверенность ${r.conf}%`+(TEACHER_N>0?` · подстроено под учителя: ${TEACHER_N} примеров`:"");
+  const svg=$("netSvg");svg.classList.add("thinking");
+  const fArr=ov.f||r.f;
+  $("bars").innerHTML=fArr.map((v,i)=>`<div class="bar-row"><span class="lbl">${NAMES[i]}</span><span class="track"><i data-v="${Math.round(v*100)}" class="${v<.4?"bad":v<.65?"warn":""}"></i></span><span class="val">${Math.round(v*100)}%</span></div>`).join("");
+  $("summ").innerHTML=ov.summ||r.summ;
+  $("stuLegend").innerHTML=`<span><i class="dot" style="background:rgba(44,138,82,.35)"></i>смысл совпадает</span>
+  <span><i class="dot" style="background:rgba(207,53,39,.35)"></i>ушло от темы</span>
+  <span><i class="dot" style="background:rgba(138,90,209,.5)"></i>дословно</span>
+  <span><i class="dot" style="background:rgba(217,154,43,.5)"></i>обрывочное</span>
+  <span><i class="dot" style="background:rgba(44,138,82,.5)"></i>важный термин ✓</span>
+  <span><i class="dot" style="background:rgba(207,53,39,.3)"></i>слова нет в источнике</span>
+  <span><i class="dot" style="background:var(--hl)"></i>паразиты</span>
+  <span><i class="dot" style="background:var(--red-soft);border-bottom:2px solid var(--red)"></i>сомнительные числа/века</span>`;
+  $("stuMark").innerHTML=ov.stuHtml||r.stuHtml||"<p class='hint'>Текст пересказа пуст.</p>";
+  $("srcMark").innerHTML=r.srcHtml||"<p class='hint'>Источники не приложены.</p>";
+  const good=ov.good||r.good,bad=ov.bad||r.bad;
+  const items=[...good.map(g=>({cls:"good",t:g})),...bad.map(b=>({cls:"",t:b}))];
+  $("advice").innerHTML=items.map((x,i)=>`<li class="${x.cls}" style="animation-delay:${i*90}ms">${x.t}</li>`).join("");
+  const hasDate=r.quiz.some(q=>q.type==="date"||q.type==="century");
+  const hasTerm=r.quiz.some(q=>q.type==="term");
+  const quizValid=r.quiz&&r.quiz.length>=5&&hasDate&&hasTerm;
+  CURRENT_QUIZ=quizValid?r.quiz:null;
+  if(quizValid){
+    $("quizCard").classList.remove("hidden");
+    $("quizPrompt").classList.remove("hidden");
+    $("quizMain").classList.add("hidden");
+  }else{
+    $("quizCard").classList.add("hidden");
+  }
+  document.querySelectorAll(".step").forEach(s=>s.classList.toggle("done",s.getAttribute("href")==="#results"));
+  setTimeout(()=>{
+    document.querySelectorAll("#bars .track i").forEach(i=>i.style.width=i.dataset.v+"%");
+    res.scrollIntoView({behavior:"smooth",block:"start"});
+  },80);
+  setTimeout(()=>svg.classList.remove("thinking"),2200);
+}
+$("quizYes").onclick=()=>{
+  if(!CURRENT_QUIZ)return;
+  $("quizPrompt").classList.add("hidden");
+  $("quizMain").classList.remove("hidden");
+  buildQuizBody(CURRENT_QUIZ);
+};
+$("quizNo").onclick=()=>{
+  $("quizCard").classList.add("hidden");
+};
+$("checkBtn").onclick=async()=>{
+  if(listening)stopRec();
+  const btn=$("checkBtn");btn.disabled=true;
+  const before=tx.value;
+  const fixed=fixSpelling(before);
+  if(fixed!==before){
+    const n=countWordChanges(before,fixed);
+    tx.value=fixed;updWC();
+    if(n>0)toast(`Читатель поправил ${n} распознанных слов по словарю учебника`);
+  }
+  const stages=["Склеиваю страницы и строю смысловую модель (LSA)…","Выделяю части, термины, века и факты…","Делю ответ на предложения и блоки…","Сравниваю смысл, слова и словосочетания…"];
+  for(const sMsg of stages){btn.textContent=sMsg;await new Promise(r2=>setTimeout(r2,140));}
+  const an=analyze();
+  btn.textContent="Нейросеть думает…";
+  await new Promise(res2=>setTimeout(res2,200));
+  renderResults(an,null);
+  btn.textContent="Проверить пересказ ✓";updateReady();
+};
+$("retryBtn").onclick=()=>$("s3").scrollIntoView({behavior:"smooth"});
+$("newBtn").onclick=()=>{
+  $("clearBtn").click();$("results").classList.add("hidden");
+  document.querySelectorAll(".step").forEach(s=>s.classList.remove("done"));
+  $("s3").scrollIntoView({behavior:"smooth"});
+};
+document.querySelectorAll(".tgrade").forEach(b=>b.onclick=()=>{
+  if(!LAST_F){toast("Сначала проверь пересказ.");return;}
+  const g=+b.dataset.g;
+  const samples=TL.load();
+  samples.push({f:LAST_F,g});
+  while(samples.length>200)samples.shift();
+  TL.save(samples);refreshTeacher();
+  document.querySelectorAll(".tgrade").forEach(x=>x.classList.toggle("sel",+x.dataset.g===g));
+  toast(`Спасибо! Оценка учителя учтена (примеров: ${samples.length}).`);
+});
+$("resetLearn").onclick=()=>{TL.save([]);refreshTeacher();document.querySelectorAll(".tgrade").forEach(x=>x.classList.remove("sel"));toast("Обучение сброшено");};
+
+(function authInit(){
+  try{
+    const s=JSON.parse(localStorage.getItem(Auth.SK)||"null");
+    if(s&&s.user&&Auth.load()[s.user])Auth.user=s.user;
+  }catch(e){}
+  myTopics=Auth.user?(Auth.load()[Auth.user].topics||[]):store.load();
+})();
+renderLibrary();renderSources();renderAuthUI();updateOkLine();updateReady();
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  }
+</script>
+</body>
+</html>
