@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pereskaz5-v22';
+const CACHE_NAME = 'pereskaz5-v25-mob';
 const ASSETS = [
   './',
   './test1.html',
@@ -17,4 +17,12 @@ self.addEventListener('fetch', e => {
   e.respondWith(
     caches.match(e.request).then(r => r || fetch(e.request))
   );
+});
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys => Promise.all(
+      keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+    ))
+  );
+  self.clients.claim();
 });
